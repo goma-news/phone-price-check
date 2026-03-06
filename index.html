@@ -295,69 +295,151 @@
             opacity: 0.6;
         }
         
-        .best-price {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: #fff;
-            padding: 25px;
-            border-radius: 12px;
-            font-size: 1.6em;
-            font-weight: 700;
-            margin: 20px 0;
-            text-align: center;
+        /* 결과 화면 스타일 */
+        .result-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 15px;
+            overflow: hidden;
         }
         
-        .result-grid {
+        .result-header {
             background: #f8f9fa;
-            border-radius: 12px;
             padding: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 14px 0;
             border-bottom: 1px solid #e9ecef;
         }
         
-        .result-item:last-child {
-            border-bottom: none;
+        .result-phone-name {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
         }
         
-        .result-label {
-            color: #6c757d;
-            font-weight: 500;
+        .result-carrier-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #fff;
+            margin-right: 8px;
+        }
+        
+        .result-type-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            background: #e9ecef;
+            color: #495057;
+        }
+        
+        .result-price-section {
+            padding: 25px 20px;
+        }
+        
+        .result-discount-label {
+            color: #e74c3c;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .result-final-price {
+            font-size: 2em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .result-original-price {
+            color: #95a5a6;
+            text-decoration: line-through;
             font-size: 1em;
         }
         
-        .result-value {
-            color: #2c3e50;
-            font-weight: 600;
-            font-size: 1.1em;
-            text-align: right;
+        .result-details {
+            padding: 0 20px 20px 20px;
         }
         
-        .result-value.highlight {
-            color: #667eea;
-            font-size: 1.3em;
-        }
-        
-        .result-value.strikethrough {
-            text-decoration: line-through;
-            color: #95a5a6;
+        .result-detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-top: 1px solid #f1f3f5;
             font-size: 0.95em;
         }
         
-        .result-value.kt-text {
-            color: #000 !important;
+        .result-detail-label {
+            color: #6c757d;
+            font-weight: 500;
         }
         
-        .result-value.skt-text {
-            color: #9b59b6 !important;
+        .result-detail-value {
+            color: #2c3e50;
+            font-weight: 600;
+            text-align: right;
         }
         
-        .result-value.lg-text {
-            color: #e91e63 !important;
+        .result-consult-btn {
+            width: 100%;
+            background: #FFE812;
+            color: #000;
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+        
+        .result-consult-btn:hover {
+            background: #F5DC00;
+            transform: translateY(-2px);
+        }
+        
+        .result-note {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            color: #6c757d;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        /* 판매중지/문의 스타일 */
+        .out-of-stock-section {
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .out-of-stock-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .out-of-stock-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .out-of-stock-desc {
+            color: #6c757d;
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin-bottom: 20px;
         }
         
         .carrier-badge {
@@ -660,64 +742,116 @@
             const isMove = currentCarrier !== targetCarrier;
             const priceType = isMove ? 'move' : 'change';
             const price = phone[targetCarrier][priceType];
-            const formattedPrice = formatPriceToWon(price);
-            const retailPrice = '1,287,000원';
+            
+            // 통신사별 색상
+            let carrierColor = '#667eea';
+            let carrierName = '';
+            if (targetCarrier === 'skt') {
+                carrierColor = '#9b59b6';
+                carrierName = 'SKT';
+            } else if (targetCarrier === 'kt') {
+                carrierColor = '#000';
+                carrierName = 'KT';
+            } else if (targetCarrier === 'lg') {
+                carrierColor = '#e91e63';
+                carrierName = 'LG U+';
+            }
             
             const plan = planInfo[targetCarrier];
             const service = additionalServices[targetCarrier];
             
-            // 통신사별 색상 클래스
-            let carrierClass = '';
-            let carrierName = '';
-            if (targetCarrier === 'skt') {
-                carrierClass = 'skt-text';
-                carrierName = 'SKT';
-            } else if (targetCarrier === 'kt') {
-                carrierClass = 'kt-text';
-                carrierName = 'KT';
-            } else if (targetCarrier === 'lg') {
-                carrierClass = 'lg-text';
-                carrierName = 'LG U+';
+            // 가격이 없거나 0인 경우 -> 문의하기 화면
+            if (price === '-' || price === '0' || !price) {
+                const modalBody = document.getElementById('modalBody');
+                modalBody.innerHTML = `
+                    <div class="step-title">견적 결과</div>
+                    
+                    <div class="result-card">
+                        <div class="result-header">
+                            <div class="result-phone-name">${phone.name}</div>
+                            <div>
+                                <span class="result-carrier-badge" style="background: ${carrierColor};">${carrierName}</span>
+                                <span class="result-type-badge">${isMove ? '번호이동' : '기기변경'}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="out-of-stock-section">
+                            <div class="out-of-stock-icon">📦</div>
+                            <div class="out-of-stock-title">문의하기</div>
+                            <div class="out-of-stock-desc">
+                                재고 부족으로 실시간 문의가 필요해요<br>
+                                카카오톡으로 문의하시면 빠르게 안내해드립니다
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="http://pf.kakao.com/_Ypsen/chat" target="_blank" class="result-consult-btn">
+                        💬 카카오톡으로 문의하기
+                    </a>
+                    
+                    <div class="result-note">
+                        📌 실시간 재고 확인 및 최저가 안내<br>
+                        📌 24시간 상담 가능
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn btn-back" onclick="startEstimate()">다시 계산하기</button>
+                        <button class="btn btn-next" onclick="closeModal()">닫기</button>
+                    </div>
+                `;
+                return;
             }
+            
+            // 정상 가격이 있는 경우
+            const formattedPrice = formatPriceToWon(price);
+            const retailPrice = 1287000; // 임시
+            const estimatePrice = parseInt(formattedPrice.replace(/[^0-9]/g, ''));
+            const discountPercent = Math.round((1 - estimatePrice / retailPrice) * 100);
             
             const modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = `
                 <div class="step-title">견적 결과</div>
-                <div class="best-price">${formattedPrice}</div>
-                <div class="result-grid">
-                    <div class="result-item">
-                        <span class="result-label">모델명</span>
-                        <span class="result-value">${phone.name}</span>
+                
+                <div class="result-card">
+                    <div class="result-header">
+                        <div class="result-phone-name">${phone.name}</div>
+                        <div>
+                            <span class="result-carrier-badge" style="background: ${carrierColor};">${carrierName}</span>
+                            <span class="result-type-badge">${isMove ? '번호이동' : '기기변경'}</span>
+                        </div>
                     </div>
-                    <div class="result-item">
-                        <span class="result-label">기존 가격</span>
-                        <span class="result-value strikethrough">${retailPrice}</span>
+                    
+                    <div class="result-price-section">
+                        <div class="result-discount-label">💰 최종 할인가 ${discountPercent}%</div>
+                        <div class="result-final-price">${formattedPrice}</div>
+                        <div class="result-original-price">출고가 ${retailPrice.toLocaleString()}원</div>
                     </div>
-                    <div class="result-item">
-                        <span class="result-label">견적 가격</span>
-                        <span class="result-value highlight">${formattedPrice}</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-label">통신사</span>
-                        <span class="result-value ${carrierClass}">${carrierName}</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-label">유형</span>
-                        <span class="result-value">${isMove ? '번호이동' : '기기변경'}</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-label">${isMove ? '번호이동 가격' : '기기변경 가격'}</span>
-                        <span class="result-value">${formattedPrice}</span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-label">요금제</span>
-                        <span class="result-value">${plan.name}<br><small>(${plan.duration})</small></span>
-                    </div>
-                    <div class="result-item">
-                        <span class="result-label">부가 서비스</span>
-                        <span class="result-value">${service.name}<br><small>(${service.price})</small></span>
+                    
+                    <div class="result-details">
+                        <div class="result-detail-item">
+                            <span class="result-detail-label">요금제</span>
+                            <span class="result-detail-value">${plan.name}</span>
+                        </div>
+                        <div class="result-detail-item">
+                            <span class="result-detail-label">유지 기간</span>
+                            <span class="result-detail-value">${plan.duration}</span>
+                        </div>
+                        <div class="result-detail-item">
+                            <span class="result-detail-label">부가 서비스</span>
+                            <span class="result-detail-value">${service.name} (${service.price})</span>
+                        </div>
                     </div>
                 </div>
+                
+                <a href="http://pf.kakao.com/_Ypsen/chat" target="_blank" class="result-consult-btn">
+                    💬 조건으로 카톡 문의하기
+                </a>
+                
+                <div class="result-note">
+                    📌 온라인 신청 후 수령까지 24시간 내 배송<br>
+                    📌 요금제는 연중무휴 24시간 바로 가입
+                </div>
+                
                 <div class="btn-group">
                     <button class="btn btn-back" onclick="startEstimate()">다시 계산하기</button>
                     <button class="btn btn-next" onclick="closeModal()">닫기</button>
