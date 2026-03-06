@@ -347,7 +347,6 @@
         let currentCarrier = '';
         let targetCarrier = '';
 
-        // 통신사별 요금제 정보
         const planInfo = {
             'SKT': { price: '109,000원', duration: '6개월' },
             'KT': { price: '110,000원', duration: '6개월' },
@@ -369,8 +368,7 @@
             const lines = csvText.split('\n');
             phoneData = [];
             
-            // U10:AA45 데이터 파싱 (10번째 줄부터 시작 - 날짜 제외)
-            for (let i = 9; i < 45; i++) { // 9부터 시작 (0-based index로 10번째 줄)
+            for (let i = 10; i < 46; i++) {
                 const cols = parseCSVLine(lines[i]);
                 const phoneName = cols[20] ? cols[20].trim() : '';
                 
@@ -397,7 +395,7 @@
                 phoneData.push(phone);
             }
             
-            console.log('데이터 로드 완료:', phoneData.length + '개');
+            console.log('로드완료:', phoneData.length + '개');
         }
 
         function parseCSVLine(line) {
@@ -648,14 +646,12 @@
             `;
         }
 
-        // 만원 단위를 원 단위로 변환 (64.3 -> 643,000)
         function formatPriceToWon(price) {
             if (typeof price === 'string') {
                 price = parseFloat(price);
             }
             if (isNaN(price)) return '0';
             
-            // 만원 단위를 원 단위로 변환
             const wonPrice = Math.round(price * 10000);
             return wonPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
