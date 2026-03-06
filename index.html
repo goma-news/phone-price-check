@@ -646,5 +646,17 @@
 
         window.addEventListener('DOMContentLoaded', loadData);
     </script>
+        window.addEventListener('DOMContentLoaded', loadData);
+        
+        // 1시간마다 자동 데이터 갱신
+        setInterval(() => {
+            console.log('🔄 데이터 자동 갱신 중... (' + new Date().toLocaleTimeString() + ')');
+            loadData();
+        }, 3600000); // 3600000ms = 1시간
+    </script>
+</body>
+</html>
+
+    
 </body>
 </html>
