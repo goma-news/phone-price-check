@@ -359,6 +359,10 @@
             margin-bottom: 8px;
         }
         
+        .result-final-price.negative {
+            color: #27ae60;
+        }
+        
         .result-original-price {
             color: #95a5a6;
             text-decoration: line-through;
@@ -755,7 +759,6 @@
                     continue;
                 }
                 
-                // 🔧 수정: 출고가도 읽어오기 (C열 = cols[2])
                 const retailPrice = cols[2]?.trim() || '0';
                 
                 phoneData.push({
@@ -796,23 +799,46 @@
             return result;
         }
 
-        // 🔧 수정: 만원 단위 가격 정리 (음수 처리 포함)
         function cleanPrice(price) {
-            if (!price || price.trim() === '' || price.trim() === '0') {
+            // undefined, null, 빈 문자열 체크
+            if (!price || price.trim() === '') {
                 return '-';
             }
-            const cleaned = price.replace(/[^0-9.\-]/g, '').trim();
+            
+            // #REF! 에러 체크
+            if (price.toString().includes('#REF!') || price.toString().includes('REF')) {
+                return '-';
+            }
+            
+            // '0'만 있는 경우
+            const trimmed = price.toString().trim();
+            if (trimmed === '0' || trimmed === '0.0') {
+                return '-';
+            }
+            
+            // 숫자와 소수점, 마이너스만 남기기
+            const cleaned = trimmed.replace(/[^0-9.\-]/g, '').trim();
+            
+            // 빈 문자열이거나 '-'만 있으면
+            if (cleaned === '' || cleaned === '-' || cleaned === '.') {
+                return '-';
+            }
+            
             const numValue = parseFloat(cleaned);
             
-            // 음수이거나 0이면 판매 안 함
-            if (isNaN(numValue) || numValue <= 0) {
+            // 숫자가 아닌 경우만 제외 (음수는 정상!)
+            if (isNaN(numValue)) {
+                return '-';
+            }
+            
+            // 0은 제외 (음수는 OK)
+            if (numValue === 0) {
                 return '-';
             }
             
             return cleaned;
         }
 
-        // 🔧 추가: 출고가 정리 (원 단위)
         function cleanRetailPrice(price) {
             if (!price || price.trim() === '' || price.trim() === '0') {
                 return 0;
@@ -983,7 +1009,6 @@
             const priceType = isMove ? 'move' : 'change';
             const price = phone[targetCarrier][priceType];
             
-            // 통신사별 색상
             let carrierColor = '#667eea';
             let carrierName = '';
             if (targetCarrier === 'skt') {
@@ -1000,7 +1025,7 @@
             const plan = planInfo[targetCarrier];
             const service = additionalServices[targetCarrier];
             
-            // 🔧 수정: 가격이 없거나 0 이하인 경우 -> 문의하기 화면
+            // 가격이 없거나 0인 경우 -> 문의하기 화면
             if (price === '-' || price === '0' || !price) {
                 const modalBody = document.getElementById('modalBody');
                 modalBody.innerHTML = `
@@ -1041,18 +1066,19 @@
                 return;
             }
             
-            // 🔧 수정: 정상 가격이 있는 경우 - 실제 출고가 사용
+            // 정상 가격이 있는 경우
             const formattedPrice = formatPriceToWon(price);
-            const retailPrice = phone.retail || 1287000; // 출고가 없으면 기본값
-            const estimatePrice = parseInt(formattedPrice.replace(/[^0-9]/g, ''));
+            const retailPrice = phone.retail || 1287000;
+            const estimatePrice = Math.abs(parseInt(formattedPrice.replace(/[^0-9]/g, '')));
             
-            // 🔧 수정: 할인율 계산 (출고가가 0이면 표시 안 함)
             let discountPercent = 0;
             if (retailPrice > 0) {
                 discountPercent = Math.round((1 - estimatePrice / retailPrice) * 100);
-                // 할인율이 음수면 0으로
                 if (discountPercent < 0) discountPercent = 0;
             }
+            
+            // 음수 가격인지 체크
+            const isNegativePrice = formattedPrice.startsWith('-');
             
             const modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = `
@@ -1068,9 +1094,10 @@
                     </div>
                     
                     <div class="result-price-section">
-                        ${discountPercent > 0 ? `<div class="result-discount-label">최종 할인가 ${discountPercent}%</div>` : ''}
-                        <div class="result-final-price">${formattedPrice}</div>
-                        ${retailPrice > 0 ? `<div class="result-original-price">출고가 ${retailPrice.toLocaleString()}원</div>` : ''}
+                        ${discountPercent > 0 && !isNegativePrice ? `<div class="result-discount-label">최종 할인가 ${discountPercent}%</div>` : ''}
+                        ${isNegativePrice ? `<div class="result-discount-label">돌려받는 가격</div>` : ''}
+                        <div class="result-final-price ${isNegativePrice ? 'negative' : ''}">${formattedPrice}</div>
+                        ${retailPrice > 0 && !isNegativePrice ? `<div class="result-original-price">출고가 ${retailPrice.toLocaleString()}원</div>` : ''}
                     </div>
                     
                     <div class="result-details">
@@ -1107,16 +1134,27 @@
         }
 
         function formatPriceToWon(price) {
-            if (price === '-' || !price || price === '0') {
+            if (price === '-' || !price) {
                 return '판매중지';
             }
             
             const numPrice = parseFloat(price);
-            if (isNaN(numPrice) || numPrice <= 0) {
+            if (isNaN(numPrice)) {
+                return '판매중지';
+            }
+            
+            // 0만 제외
+            if (numPrice === 0) {
                 return '판매중지';
             }
             
             const wonPrice = Math.round(numPrice * 10000);
+            
+            // 음수면 마이너스 붙여서 표시
+            if (wonPrice < 0) {
+                return '-' + Math.abs(wonPrice).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원';
+            }
+            
             return wonPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원';
         }
 
