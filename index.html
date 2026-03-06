@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>힙폰 - 오늘의 휴대폰 시세</title>
     <style>
         * {
@@ -455,20 +458,228 @@
         }
         
         @media (max-width: 768px) {
+            body {
+                padding: 0;
+            }
+            
+            .main-container {
+                padding: 30px 15px;
+            }
+            
             .logo {
-                font-size: 2.5em;
+                font-size: 2.2em;
             }
             
             .subtitle {
+                font-size: 1em;
+            }
+            
+            .promo-text {
+                font-size: 0.95em;
+                padding: 0 10px;
+            }
+            
+            .estimate-btn {
+                padding: 16px 50px;
                 font-size: 1.1em;
+                width: 90%;
+                max-width: 300px;
+            }
+            
+            .additional-info {
+                padding: 20px;
+                max-width: 90%;
+            }
+            
+            .additional-info-title {
+                font-size: 1.1em;
+            }
+            
+            .additional-info-desc {
+                font-size: 0.95em;
+            }
+            
+            .consult-btn {
+                padding: 12px 35px;
+                font-size: 0.95em;
+            }
+            
+            .modal {
+                padding: 10px;
+            }
+            
+            .modal-content {
+                padding: 25px 20px;
+                width: 95%;
+                max-height: 90vh;
+            }
+            
+            .close-modal {
+                top: 15px;
+                right: 15px;
+                font-size: 28px;
+            }
+            
+            .step-title {
+                font-size: 1.2em;
+                margin-bottom: 20px;
             }
             
             .option-grid {
                 grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .option-btn {
+                padding: 18px;
+                font-size: 1em;
+                min-height: 55px;
+            }
+            
+            .phone-list {
+                max-height: 350px;
+            }
+            
+            .phone-item {
+                padding: 14px 18px;
+                font-size: 0.95em;
+                min-height: 50px;
+            }
+            
+            .btn-group {
+                gap: 8px;
+                flex-direction: column;
+            }
+            
+            .btn {
+                padding: 14px;
+                font-size: 0.95em;
+                width: 100%;
+            }
+            
+            .result-card {
+                margin-bottom: 12px;
+            }
+            
+            .result-header {
+                padding: 18px 15px;
+            }
+            
+            .result-phone-name {
+                font-size: 1.1em;
+                margin-bottom: 12px;
+            }
+            
+            .result-carrier-badge {
+                padding: 5px 12px;
+                font-size: 0.85em;
+            }
+            
+            .result-type-badge {
+                padding: 5px 12px;
+                font-size: 0.85em;
+            }
+            
+            .result-price-section {
+                padding: 20px 15px;
+            }
+            
+            .result-discount-label {
+                font-size: 1em;
+            }
+            
+            .result-final-price {
+                font-size: 1.7em;
+            }
+            
+            .result-original-price {
+                font-size: 0.9em;
+            }
+            
+            .result-details {
+                padding: 0 15px 18px 15px;
+            }
+            
+            .result-detail-item {
+                padding: 10px 0;
+                font-size: 0.9em;
+                flex-wrap: wrap;
+            }
+            
+            .result-detail-label {
+                font-size: 0.9em;
+            }
+            
+            .result-detail-value {
+                font-size: 0.95em;
+            }
+            
+            .result-consult-btn {
+                padding: 16px;
+                font-size: 1em;
+                margin-bottom: 12px;
+            }
+            
+            .result-note {
+                padding: 12px;
+                font-size: 0.8em;
+                line-height: 1.7;
+            }
+            
+            .out-of-stock-section {
+                padding: 25px 15px;
+            }
+            
+            .out-of-stock-title {
+                font-size: 1.2em;
+            }
+            
+            .out-of-stock-desc {
+                font-size: 0.9em;
+            }
+            
+            .option-btn:active,
+            .phone-item:active,
+            .btn:active,
+            .result-consult-btn:active {
+                transform: scale(0.98);
+            }
+            
+            .phone-list::-webkit-scrollbar {
+                width: 3px;
+            }
+            
+            .phone-list::-webkit-scrollbar-thumb {
+                background: #bdc3c7;
+                border-radius: 3px;
+            }
+            
+            .modal-content::-webkit-scrollbar {
+                width: 3px;
+            }
+            
+            .modal-content::-webkit-scrollbar-thumb {
+                background: #bdc3c7;
+                border-radius: 3px;
+            }
+        }
+        
+        @media (max-width: 375px) {
+            .logo {
+                font-size: 2em;
+            }
+            
+            .estimate-btn {
+                padding: 14px 40px;
+                font-size: 1em;
             }
             
             .modal-content {
-                padding: 30px 20px;
+                padding: 20px 15px;
+            }
+            
+            .result-final-price {
+                font-size: 1.5em;
             }
         }
     </style>
@@ -544,9 +755,12 @@
                     continue;
                 }
                 
+                // 🔧 수정: 출고가도 읽어오기 (C열 = cols[2])
+                const retailPrice = cols[2]?.trim() || '0';
+                
                 phoneData.push({
                     name: name,
-                    retail: '출고가 정보 없음',
+                    retail: cleanRetailPrice(retailPrice),
                     skt: {
                         move: cleanPrice(cols[21]),
                         change: cleanPrice(cols[22])
@@ -582,12 +796,35 @@
             return result;
         }
 
+        // 🔧 수정: 만원 단위 가격 정리 (음수 처리 포함)
         function cleanPrice(price) {
             if (!price || price.trim() === '' || price.trim() === '0') {
                 return '-';
             }
             const cleaned = price.replace(/[^0-9.\-]/g, '').trim();
-            return cleaned || '-';
+            const numValue = parseFloat(cleaned);
+            
+            // 음수이거나 0이면 판매 안 함
+            if (isNaN(numValue) || numValue <= 0) {
+                return '-';
+            }
+            
+            return cleaned;
+        }
+
+        // 🔧 추가: 출고가 정리 (원 단위)
+        function cleanRetailPrice(price) {
+            if (!price || price.trim() === '' || price.trim() === '0') {
+                return 0;
+            }
+            const cleaned = price.replace(/[^0-9]/g, '').trim();
+            const numValue = parseInt(cleaned);
+            
+            if (isNaN(numValue) || numValue <= 0) {
+                return 0;
+            }
+            
+            return numValue;
         }
 
         function startEstimate() {
@@ -763,7 +1000,7 @@
             const plan = planInfo[targetCarrier];
             const service = additionalServices[targetCarrier];
             
-            // 가격이 없거나 0인 경우 -> 문의하기 화면
+            // 🔧 수정: 가격이 없거나 0 이하인 경우 -> 문의하기 화면
             if (price === '-' || price === '0' || !price) {
                 const modalBody = document.getElementById('modalBody');
                 modalBody.innerHTML = `
@@ -804,11 +1041,18 @@
                 return;
             }
             
-            // 정상 가격이 있는 경우
+            // 🔧 수정: 정상 가격이 있는 경우 - 실제 출고가 사용
             const formattedPrice = formatPriceToWon(price);
-            const retailPrice = 1287000; // 임시
+            const retailPrice = phone.retail || 1287000; // 출고가 없으면 기본값
             const estimatePrice = parseInt(formattedPrice.replace(/[^0-9]/g, ''));
-            const discountPercent = Math.round((1 - estimatePrice / retailPrice) * 100);
+            
+            // 🔧 수정: 할인율 계산 (출고가가 0이면 표시 안 함)
+            let discountPercent = 0;
+            if (retailPrice > 0) {
+                discountPercent = Math.round((1 - estimatePrice / retailPrice) * 100);
+                // 할인율이 음수면 0으로
+                if (discountPercent < 0) discountPercent = 0;
+            }
             
             const modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = `
@@ -824,9 +1068,9 @@
                     </div>
                     
                     <div class="result-price-section">
-                        <div class="result-discount-label">최종 할인가 ${discountPercent}%</div>
+                        ${discountPercent > 0 ? `<div class="result-discount-label">최종 할인가 ${discountPercent}%</div>` : ''}
                         <div class="result-final-price">${formattedPrice}</div>
-                        <div class="result-original-price">출고가 ${retailPrice.toLocaleString()}원</div>
+                        ${retailPrice > 0 ? `<div class="result-original-price">출고가 ${retailPrice.toLocaleString()}원</div>` : ''}
                     </div>
                     
                     <div class="result-details">
@@ -868,7 +1112,7 @@
             }
             
             const numPrice = parseFloat(price);
-            if (isNaN(numPrice)) {
+            if (isNaN(numPrice) || numPrice <= 0) {
                 return '판매중지';
             }
             
