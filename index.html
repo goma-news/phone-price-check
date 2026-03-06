@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>휴대폰 시세 확인</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .update-time {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+
+        .filter-section {
+            margin-bottom: 30px;
+        }
+
+        .filter-group {
+            margin-bottom: 20px;
+        }
+
+        .filter-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 12px 24px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover {
+            background: #f0f4ff;
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            font-size: 1em;
+            margin-bottom: 20px;
+        }
+
+        .phone-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .phone-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .phone-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            border-color: #667eea;
+        }
+
+        .phone-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .phone-retail {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .price-tag {
+            background: #667eea;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            display: inline-block;
+            margin: 5px 5px 5px 0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 900px;
+            margin: 50px auto;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2em;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .modal-header {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .carrier-section {
+            margin: 30px 0;
+        }
+
+        .carrier-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f0f4ff;
+            border-radius: 10px;
+        }
+
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .price-item:last-child {
+            border-bottom: none;
+        }
+
+        .price-label {
+            font-weight: 500;
+            color: #666;
+        }
+
+        .price-value {
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .best-price {
+            background: #ffd700;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .phone-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                padding: 20px;
+                margin: 20px auto;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: #667eea;
+        }
+
+        .error {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: #ff0000;
+        }
+
+        .reload-btn {
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .reload-btn:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📱 휴대폰 시세 확인</h1>
+            <div class="update-time" id="updateTime">데이터 로딩중...</div>
+        </div>
+
+        <div class="card">
+            <div class="filter-section">
+                <div class="filter-group">
+                    <label>🔍 검색</label>
+                    <input type="text" id="searchBox" class="search-box" placeholder="기종명을 입력하세요 (예: S26, 아이폰17)">
+                </div>
+
+                <div class="filter-group">
+                    <label>📱 브랜드 선택</label>
+                    <div class="button-group">
+                        <button class="filter-btn active" data-brand="all">전체</button>
+                        <button class="filter-btn" data-brand="갤럭시">갤럭시</button>
+                        <button class="filter-btn" data-brand="아이폰">아이폰</button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label>📡 통신사 선택</label>
+                    <div class="button-group">
+                        <button class="filter-btn active" data-carrier="all">전체</button>
+                        <button class="filter-btn" data-carrier="skt">SKT</button>
+                        <button class="filter-btn" data-carrier="kt">KT</button>
+                        <button class="filter-btn" data-carrier="lg">LG U+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="phoneGrid" class="phone-grid">
+                <div class="loading">📊 스프레드시트에서 데이터를 가져오는 중...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // 구글 스프레드시트 설정
+        const SHEET_ID = '1kncTOT0Owvplo-ee6BD-BbUwYU5AC4YDbQ-iY6Wv5Zc';
+        const GID = '647819140'; // 3사통합 탭의 GID
+        
+        let phones = [];
+        let selectedBrand = 'all';
+        let selectedCarrier = 'all';
+        let updateDate = '';
+
+        // 구글 스프레드시트에서 데이터 가져오기
+        async function loadDataFromSheet() {
+            try {
+                // Google Sheets를 CSV로 가져오기
+                const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
+                
+                const response = await fetch(url);
+                const csvText = await response.text();
+                
+                // CSV 파싱
+                parseCSVData(csvText);
+                
+                // UI 업데이트
+                document.getElementById('updateTime').textContent = `최종 업데이트: ${updateDate}`;
+                renderPhones();
+                
+            } catch (error) {
+                console.error('데이터 로딩 실패:', error);
+                document.getElementById('phoneGrid').innerHTML = `
+                    <div class="error">
+                        ❌ 데이터를 불러오는데 실패했습니다.<br>
+                        스프레드시트가 공개 설정되어 있는지 확인해주세요.
+                        <br><button class="reload-btn" onclick="loadDataFromSheet()">다시 시도</button>
+                    </div>
+                `;
+            }
+        }
+
+        // CSV 데이터 파싱
+        function parseCSVData(csvText) {
+            const lines = csvText.split('\n');
+            phones = [];
+            
+            // 업데이트 날짜 찾기 (6번째 줄, B열)
+            if (lines.length > 5) {
+                const dateLine = lines[5].split(',');
+                updateDate = dateLine[1] || '2026-03-06';
+            }
+            
+            // 데이터는 9번째 줄부터 시작 (0-based index로 8)
+            for (let i = 8; i < lines.length; i++) {
+                const cols = parseCSVLine(lines[i]);
+                
+                // 빈 줄이거나 모델명이 없으면 스킵
+                if (!cols[1] || cols[1].trim() === '' || cols[1] === '모델명' || cols[1] === '부가조건') {
+                    continue;
+                }
+                
+                const phone = {
+                    name: cols[1].trim(),
+                    retail: formatRetailPrice(cols[2]),
+                    skt: {
+                        subsidy_new: cleanPrice(cols[3]),
+                        subsidy_change: cleanPrice(cols[4]),
+                        move: cleanPrice(cols[5]),
+                        change: cleanPrice(cols[6])
+                    },
+                    kt: {
+                        subsidy_new: cleanPrice(cols[7]),
+                        subsidy_change: cleanPrice(cols[8]),
+                        move: cleanPrice(cols[9]),
+                        change: cleanPrice(cols[10])
+                    },
+                    lg: {
+                        subsidy_new: cleanPrice(cols[11]),
+                        subsidy_change: cleanPrice(cols[12]),
+                        move: cleanPrice(cols[13]),
+                        change: cleanPrice(cols[14])
+                    }
+                };
+                
+                phones.push(phone);
+            }
+        }
+
+        // CSV 한 줄 파싱 (쉼표가 포함된 셀 처리)
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current);
+            
+            return result;
+        }
+
+        // 가격 정리
+        function cleanPrice(price) {
+            if (!price || price.trim() === '' || price.trim() === '0') {
+                return '-';
+            }
+            price = price.replace(/[^0-9\-]/g, '');
+            return price || '-';
+        }
+
+        // 출고가 포맷
+        function formatRetailPrice(price) {
+            if (!price) return '-';
+            const cleaned = price.replace(/[^0-9]/g, '');
+            if (!cleaned) return '-';
+            return formatPrice(cleaned) + '원';
+        }
+
+        // 필터 버튼 이벤트
+        document.querySelectorAll('.filter-btn[data-brand]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn[data-brand]').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedBrand = this.dataset.brand;
+                renderPhones();
+            });
+        });
+
+        document.querySelectorAll('.filter-btn[data-carrier]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn[data-carrier]').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedCarrier = this.dataset.carrier;
+                renderPhones();
+            });
+        });
+
+        // 검색
+        document.getElementById('searchBox').addEventListener('input', function(e) {
+            renderPhones(e.target.value);
+        });
+
+        function renderPhones(searchTerm = '') {
+            const grid = document.getElementById('phoneGrid');
+            let filteredPhones = phones;
+
+            // 브랜드 필터
+            if (selectedBrand !== 'all') {
+                filteredPhones = filteredPhones.filter(phone => {
+                    if (selectedBrand === '갤럭시') {
+                        return phone.name.includes('S') || phone.name.includes('Z') || phone.name.includes('A') || phone.name.includes('갤럭시');
+                    } else if (selectedBrand === '아이폰') {
+                        return phone.name.includes('아이폰');
+                    }
+                });
+            }
+
+            // 검색어 필터
+            if (searchTerm) {
+                filteredPhones = filteredPhones.filter(phone => 
+                    phone.name.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+            }
+
+            if (filteredPhones.length === 0) {
+                grid.innerHTML = '<div class="loading">검색 결과가 없습니다.</div>';
+                return;
+            }
+
+            grid.innerHTML = filteredPhones.map(phone => {
+                const lowestPrice = getLowestPrice(phone);
+                return `
+                    <div class="phone-card" onclick='showDetail(${JSON.stringify(phone.name)})'>
+                        <div class="phone-name">${phone.name}</div>
+                        <div class="phone-retail">출고가: ${phone.retail}</div>
+                        ${lowestPrice ? `<div class="price-tag">최저가: ${formatPrice(lowestPrice)}원</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getLowestPrice(phone) {
+            const prices = [];
+            
+            if (selectedCarrier === 'all' || selectedCarrier === 'skt') {
+                if (phone.skt.move !== '-') prices.push(parseInt(phone.skt.move.replace(/,/g, '')));
+                if (phone.skt.change !== '-') prices.push(parseInt(phone.skt.change.replace(/,/g, '')));
+            }
+            if (selectedCarrier === 'all' || selectedCarrier === 'kt') {
+                if (phone.kt.move !== '-') prices.push(parseInt(phone.kt.move.replace(/,/g, '')));
+                if (phone.kt.change !== '-') prices.push(parseInt(phone.kt.change.replace(/,/g, '')));
+            }
+            if (selectedCarrier === 'all' || selectedCarrier === 'lg') {
+                if (phone.lg.move !== '-') prices.push(parseInt(phone.lg.move.replace(/,/g, '')));
+                if (phone.lg.change !== '-') prices.push(parseInt(phone.lg.change.replace(/,/g, '')));
+            }
+
+            return prices.length > 0 ? Math.min(...prices) : null;
+        }
+
+        function formatPrice(price) {
+            if (typeof price === 'string') {
+                price = parseInt(price.replace(/,/g, ''));
+            }
+            if (isNaN(price)) return '0';
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function showDetail(phoneName) {
+            const phone = phones.find(p => p.name === phoneName);
+            if (!phone) return;
+
+            const lowestPrice = getLowestPrice(phone);
+            
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div class="modal-header">
+                    <div class="modal-title">${phone.name}</div>
+                    <div style="color: #666; font-size: 1.1em;">출고가: ${phone.retail}</div>
+                </div>
+
+                ${lowestPrice ? `<div class="best-price">🎉 최저가: ${formatPrice(lowestPrice)}원</div>` : ''}
+
+                <div class="carrier-section">
+                    <div class="carrier-name">📱 SKT (109 요금제)</div>
+                    <div class="price-item">
+                        <span class="price-label">공시지원 (번호이동)</span>
+                        <span class="price-value">${phone.skt.subsidy_new !== '-' ? formatPrice(phone.skt.subsidy_new) + '원' : '판매중지'}</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-label">공시지원 (기기변경)</span>
+                        <span class="price-value">${phone.skt.subsidy_change !== '-' ? formatPrice(phone.skt.subsidy_change) + '원' : '판매중지'}</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-label">선택약정 (번호이동)</span>
+                        <span class="price-value">${phone.skt.move !== '-' ? formatPrice(phone.skt.move) + '원' : '판매중지'}</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-label">선택약정 (기기변경)</span>
+                        <span class="price-value">${phone.skt.change !== '-' ? formatPrice(phone.skt.change) + '원' : '판매중지'}</span>
+                    </div>
+                </div>
+
+                <div class="carrier-section">
+                    <div class="carrier-name">📱 KT (110 요금제)</div>
+                    <div class="price-item">
+                        <span class="price-label">공시지원 (번호이동)</span>
+                        <span class="price-value">${phone.kt.subsidy_new !== '-' ? formatPrice(phone.kt.subsidy_new) + '원' : '판매중지'}</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-label">공시지원 (기기변경)</span>
+                        <span class="price-value">${phone.kt.subsidy_change !== '-' ? formatPrice(phone.kt.subsidy_change) + '원' : '판매중지'}</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-label">선택약정 (번호이동)</span>
+                        <span class="price-value">${phone.kt.move !== '-' ? formatPrice(phone.kt.move) + '원' : '판매중지'}</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-label">선택약정 (기기변경)</span>
+                        <span class="price-value">${phone.kt.change !== '-' ? formatPrice(phone.kt.change) + '원' : '판매중지'}</span>
+                    </div>
+                </div>
+
+                <div class="carrier-section">
+                    <div class="carrier-name">📱 LG U+ (115 요금제)</div>
+                    <div class="price-item">
+                        <span class="price-label">공시지원 (번호이동)</span>
+                        <span class="price-value">${phone.lg.subsidy_new !== '-' ? formatPrice(phone.lg.subsidy_new) + '원' : '판매중지'}</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-label">공시지원 (기기변경)</span>
+                        <span class="price-value">${phone.lg.subsidy_change !== '-' ? formatPrice(phone.lg.subsidy_change) + '원' : '판매중지'}</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-label">선택약정 (번호이동)</span>
+                        <span class="price-value">${phone.lg.move !== '-' ? formatPrice(phone.lg.move) + '원' : '판매중지'}</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="price-label">선택약정 (기기변경)</span>
+                        <span class="price-value">${phone.lg.change !== '-' ? formatPrice(phone.lg.change) + '원' : '판매중지'}</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // 페이지 로드시 데이터 가져오기
+        loadDataFromSheet();
+    </script>
+</body>
+</html>
