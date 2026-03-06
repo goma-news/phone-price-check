@@ -204,11 +204,6 @@
             background: #2980b9;
         }
 
-        .btn-next:disabled {
-            background: #bdc3c7;
-            cursor: not-allowed;
-        }
-
         .result-container {
             text-align: center;
         }
@@ -257,12 +252,6 @@
             font-size: 1.5em;
             font-weight: 700;
             margin: 20px 0;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #7f8c8d;
         }
 
         @media (max-width: 768px) {
@@ -352,34 +341,30 @@
             const lines = csvText.split('\n');
             phoneData = [];
             
-            // 데이터는 9번째 줄부터 시작 (0-based index로 8)
-            for (let i = 8; i < lines.length; i++) {
+            // U9:AA45 데이터 파싱 (9번째 줄부터 45번째 줄까지)
+            for (let i = 8; i < 45; i++) { // 0-based index
                 const cols = parseCSVLine(lines[i]);
                 
-                if (!cols[1] || cols[1].trim() === '' || cols[1] === '모델명' || cols[1] === '부가조건') {
+                // U열(20번 인덱스)에 제품명이 있음
+                const phoneName = cols[20] ? cols[20].trim() : '';
+                
+                if (!phoneName || phoneName === '' || phoneName === '모델명') {
                     continue;
                 }
                 
                 const phone = {
-                    name: cols[1].trim(),
-                    retail: cols[2],
+                    name: phoneName,
                     skt: {
-                        subsidy_new: cleanPrice(cols[3]),   // D열: 공시/번이
-                        subsidy_change: cleanPrice(cols[4]), // E열: 공시/기변
-                        move: cleanPrice(cols[5]),           // F열: 이동
-                        change: cleanPrice(cols[6])          // G열: 기변
+                        move: cleanPrice(cols[21]),    // V열: SKT 번호이동
+                        change: cleanPrice(cols[22])   // W열: SKT 기기변경
                     },
                     kt: {
-                        subsidy_new: cleanPrice(cols[10]),   // K열: 공시/번이
-                        subsidy_change: cleanPrice(cols[11]), // L열: 공시/기변
-                        move: cleanPrice(cols[12]),          // M열: 이동
-                        change: cleanPrice(cols[13])         // N열: 기변
+                        move: cleanPrice(cols[23]),    // X열: KT 번호이동
+                        change: cleanPrice(cols[24])   // Y열: KT 기기변경
                     },
                     lg: {
-                        subsidy_new: cleanPrice(cols[14]),   // O열: 공시/번이
-                        subsidy_change: cleanPrice(cols[15]), // P열: 공시/기변
-                        move: cleanPrice(cols[16]),          // Q열: 이동
-                        change: cleanPrice(cols[17])         // R열: 기변
+                        move: cleanPrice(cols[25]),    // Z열: LG 번호이동
+                        change: cleanPrice(cols[26])   // AA열: LG 기기변경
                     }
                 };
                 
@@ -387,6 +372,7 @@
             }
             
             console.log('데이터 로드 완료:', phoneData.length + '개');
+            console.log('첫 번째 데이터:', phoneData[0]);
         }
 
         function parseCSVLine(line) {
@@ -413,9 +399,15 @@
             if (!price || price.trim() === '' || price.trim() === '0') {
                 return '-';
             }
-            // 쉼표와 공백 제거, 숫자만 추출
+            // 모든 비숫자 문자 제거 (쉼표, 공백, 문자 등)
             price = price.replace(/[^0-9\-]/g, '').trim();
-            return price || '-';
+            
+            // 빈 문자열이거나 0이면 -
+            if (!price || price === '0' || price === '-0') {
+                return '-';
+            }
+            
+            return price;
         }
 
         function startEstimate() {
@@ -480,7 +472,6 @@
             
             let phones = phoneData.filter(phone => {
                 if (selectedBrand === '갤럭시') {
-                    // 아이폰이 아닌 것만 (갤럭시, Z, A, S 등)
                     return !phone.name.includes('아이폰');
                 } else if (selectedBrand === '아이폰') {
                     return phone.name.includes('아이폰');
@@ -571,6 +562,8 @@
             const phone = phoneData.find(p => p.name === selectedPhone);
             if (!phone) {
                 alert('데이터를 찾을 수 없습니다.');
+                console.log('찾는 기종:', selectedPhone);
+                console.log('전체 데이터:', phoneData);
                 return;
             }
 
@@ -593,7 +586,6 @@
             const typeText = isMove ? '번호이동' : '기기변경';
             
             const price = carrierData[priceType];
-            const subsidyPrice = isMove ? carrierData.subsidy_new : carrierData.subsidy_change;
 
             const modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = `
@@ -601,9 +593,9 @@
                     <h2 class="step-title">견적 결과</h2>
                     <div class="result-phone">${selectedPhone}</div>
                     
-                    ${price !== '-' ? `
+                    ${price !== '-' && price !== '0' ? `
                         <div class="best-price">
-                            ${formatPrice(price)}원
+                            ${formatPrice(price)}만원
                         </div>
                     ` : '<div class="best-price" style="background: #95a5a6;">판매 중지</div>'}
                     
@@ -617,16 +609,12 @@
                             <span class="result-value">${typeText}</span>
                         </div>
                         <div class="result-item">
-                            <span class="result-label">선택약정</span>
-                            <span class="result-value">${price !== '-' ? formatPrice(price) + '원' : '판매중지'}</span>
+                            <span class="result-label">번호이동</span>
+                            <span class="result-value">${carrierData.move !== '-' && carrierData.move !== '0' ? formatPrice(carrierData.move) + '만원' : '판매중지'}</span>
                         </div>
                         <div class="result-item">
-                            <span class="result-label">공시지원</span>
-                            <span class="result-value">${subsidyPrice !== '-' ? formatPrice(subsidyPrice) + '원' : '판매중지'}</span>
-                        </div>
-                        <div class="result-item">
-                            <span class="result-label">출고가</span>
-                            <span class="result-value">${phone.retail ? formatRetailPrice(phone.retail) : '-'}</span>
+                            <span class="result-label">기기변경</span>
+                            <span class="result-value">${carrierData.change !== '-' && carrierData.change !== '0' ? formatPrice(carrierData.change) + '만원' : '판매중지'}</span>
                         </div>
                     </div>
                     
@@ -640,17 +628,14 @@
 
         function formatPrice(price) {
             if (typeof price === 'string') {
-                price = parseInt(price.replace(/,/g, ''));
+                // 이미 소수점이 있으면 그대로 사용
+                if (price.includes('.')) {
+                    return price;
+                }
+                price = parseFloat(price);
             }
             if (isNaN(price)) return '0';
-            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-
-        function formatRetailPrice(price) {
-            if (!price) return '-';
-            const cleaned = price.replace(/[^0-9]/g, '');
-            if (!cleaned) return '-';
-            return formatPrice(cleaned) + '원';
+            return price.toFixed(1);
         }
 
         window.addEventListener('DOMContentLoaded', loadData);
