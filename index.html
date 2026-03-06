@@ -36,7 +36,14 @@
         .subtitle {
             font-size: 1.4em;
             color: rgba(255,255,255,0.9);
-            margin-bottom: 50px;
+            margin-bottom: 20px;
+        }
+        
+        .promo-text {
+            font-size: 1.1em;
+            color: rgba(255,255,255,0.85);
+            margin-bottom: 30px;
+            line-height: 1.6;
         }
         
         .estimate-btn {
@@ -50,9 +57,56 @@
             transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             font-weight: 600;
+            margin-bottom: 30px;
+            display: inline-block;
         }
         
         .estimate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .additional-info {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 30px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .additional-info-title {
+            font-size: 1.2em;
+            color: #fff;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .additional-info-desc {
+            font-size: 1em;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .consult-btn {
+            background: #fff;
+            color: #667eea;
+            border: none;
+            padding: 14px 40px;
+            font-size: 1em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .consult-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
@@ -152,6 +206,25 @@
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: #fff;
             border-color: #667eea;
+        }
+        
+        /* 통신사별 색상 */
+        .option-btn.kt-color {
+            color: #000 !important;
+        }
+        
+        .option-btn.skt-color {
+            color: #9b59b6 !important;
+        }
+        
+        .option-btn.lg-color {
+            color: #e91e63 !important;
+        }
+        
+        .option-btn.selected.kt-color,
+        .option-btn.selected.skt-color,
+        .option-btn.selected.lg-color {
+            color: #fff !important;
         }
         
         .phone-list {
@@ -275,6 +348,18 @@
             font-size: 0.95em;
         }
         
+        .result-value.kt-text {
+            color: #000 !important;
+        }
+        
+        .result-value.skt-text {
+            color: #9b59b6 !important;
+        }
+        
+        .result-value.lg-text {
+            color: #e91e63 !important;
+        }
+        
         .carrier-badge {
             background: #e8f4f8;
             color: #667eea;
@@ -307,7 +392,14 @@
     <div class="main-container">
         <h1 class="logo">힙폰</h1>
         <p class="subtitle">오늘의 휴대폰 시세</p>
+        <p class="promo-text">카드 발급 및 복잡한 절차 없이<br>간편하게 확인하세요</p>
         <button class="estimate-btn" onclick="startEstimate()">견적 확인하기</button>
+        
+        <div class="additional-info">
+            <div class="additional-info-title">인터넷 + TV</div>
+            <div class="additional-info-desc">사은품 30~최대 100만원 지급</div>
+            <a href="http://pf.kakao.com/_Ypsen/chat" target="_blank" class="consult-btn">실시간 상담하기</a>
+        </div>
     </div>
 
     <div class="modal" id="modal">
@@ -350,9 +442,6 @@
                 const csvText = await response.text();
                 parseCSVData(csvText);
                 console.log('데이터 로드 완료:', phoneData.length + '개');
-                if (phoneData.length > 0) {
-                    console.log('첫 번째 데이터:', phoneData[0]);
-                }
             } catch (error) {
                 console.error('데이터 로딩 실패:', error);
             }
@@ -362,31 +451,28 @@
             const lines = csv.split('\n');
             phoneData = [];
             
-            // 9번째 줄부터 시작 (인덱스 8부터)
-            for (let i = 8; i < 45; i++) {
+            for (let i = 8; i < lines.length; i++) {
                 const cols = parseCSVLine(lines[i]);
-                const name = cols[1]?.trim();
-                const retail = cols[2]?.trim();
+                const name = cols[20]?.trim();
                 
-                // 빈 행이나 날짜 형식 제외
-                if (!name || name === '모델명' || name === '' || /^\d{4}-\d{1,2}-\d{1,2}$/.test(name)) {
+                if (!name || name === '' || name === '모델명' || /^\d{4}-\d{1,2}-\d{1,2}$/.test(name) || name === '부가조건') {
                     continue;
                 }
                 
                 phoneData.push({
                     name: name,
-                    retail: retail,
+                    retail: '출고가 정보 없음',
                     skt: {
-                        move: cleanPrice(cols[5]),    // F열: SKT 이동
-                        change: cleanPrice(cols[6])    // G열: SKT 기변
+                        move: cleanPrice(cols[21]),
+                        change: cleanPrice(cols[22])
                     },
                     kt: {
-                        move: cleanPrice(cols[11]),   // L열: KT 이동
-                        change: cleanPrice(cols[12])   // M열: KT 기변
+                        move: cleanPrice(cols[23]),
+                        change: cleanPrice(cols[24])
                     },
                     lg: {
-                        move: cleanPrice(cols[15]),   // P열: LG 이동
-                        change: cleanPrice(cols[16])   // Q열: LG 기변
+                        move: cleanPrice(cols[25]),
+                        change: cleanPrice(cols[26])
                     }
                 });
             }
@@ -415,7 +501,7 @@
             if (!price || price.trim() === '' || price.trim() === '0') {
                 return '-';
             }
-            const cleaned = price.replace(/[^0-9\-]/g, '').trim();
+            const cleaned = price.replace(/[^0-9.\-]/g, '').trim();
             return cleaned || '-';
         }
 
@@ -460,7 +546,7 @@
             
             const modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = `
-                <div class="step-title">📱 휴대폰 브랜드를 선택해주세요</div>
+                <div class="step-title">원하시는 휴대폰 브랜드를 선택해주세요</div>
                 <div class="option-grid">
                     <div class="option-btn" onclick="selectBrand('갤럭시')">갤럭시</div>
                     <div class="option-btn" onclick="selectBrand('아이폰')">아이폰</div>
@@ -494,7 +580,7 @@
             
             const modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = `
-                <div class="step-title">📱 기종을 선택해주세요</div>
+                <div class="step-title">기종을 선택해주세요</div>
                 <div class="phone-list">
                     ${filteredPhones.map(phone => `
                         <div class="phone-item" onclick="selectPhone('${phone.name}')">${phone.name}</div>
@@ -517,11 +603,11 @@
             
             const modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = `
-                <div class="step-title">📡 현재 사용 중인 통신사를 선택해주세요</div>
+                <div class="step-title">현재 사용 중인 통신사를 선택해주세요</div>
                 <div class="option-grid">
-                    <div class="option-btn" onclick="selectCurrentCarrier('skt')">SKT</div>
-                    <div class="option-btn" onclick="selectCurrentCarrier('kt')">KT</div>
-                    <div class="option-btn" onclick="selectCurrentCarrier('lg')">LG U+</div>
+                    <div class="option-btn skt-color" onclick="selectCurrentCarrier('skt')">SKT</div>
+                    <div class="option-btn kt-color" onclick="selectCurrentCarrier('kt')">KT</div>
+                    <div class="option-btn lg-color" onclick="selectCurrentCarrier('lg')">LG U+</div>
                     <div class="option-btn" onclick="selectCurrentCarrier('other')">알뜰폰</div>
                 </div>
                 <div class="btn-group">
@@ -541,15 +627,15 @@
             
             const modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = `
-                <div class="step-title">📡 원하는 통신사를 선택해주세요</div>
+                <div class="step-title">원하는 통신사를 선택해주세요</div>
                 <div class="option-grid">
-                    <div class="option-btn" onclick="selectTargetCarrier('skt')">
+                    <div class="option-btn skt-color" onclick="selectTargetCarrier('skt')">
                         SKT ${currentCarrier === 'skt' ? '<span class="carrier-badge">유지</span>' : ''}
                     </div>
-                    <div class="option-btn" onclick="selectTargetCarrier('kt')">
+                    <div class="option-btn kt-color" onclick="selectTargetCarrier('kt')">
                         KT ${currentCarrier === 'kt' ? '<span class="carrier-badge">유지</span>' : ''}
                     </div>
-                    <div class="option-btn" onclick="selectTargetCarrier('lg')">
+                    <div class="option-btn lg-color" onclick="selectTargetCarrier('lg')">
                         LG U+ ${currentCarrier === 'lg' ? '<span class="carrier-badge">유지</span>' : ''}
                     </div>
                 </div>
@@ -574,15 +660,29 @@
             const isMove = currentCarrier !== targetCarrier;
             const priceType = isMove ? 'move' : 'change';
             const price = phone[targetCarrier][priceType];
-            const formattedPrice = formatPrice(price);
-            const retailPrice = formatRetailPrice(phone.retail);
+            const formattedPrice = formatPriceToWon(price);
+            const retailPrice = '1,287,000원';
             
             const plan = planInfo[targetCarrier];
             const service = additionalServices[targetCarrier];
             
+            // 통신사별 색상 클래스
+            let carrierClass = '';
+            let carrierName = '';
+            if (targetCarrier === 'skt') {
+                carrierClass = 'skt-text';
+                carrierName = 'SKT';
+            } else if (targetCarrier === 'kt') {
+                carrierClass = 'kt-text';
+                carrierName = 'KT';
+            } else if (targetCarrier === 'lg') {
+                carrierClass = 'lg-text';
+                carrierName = 'LG U+';
+            }
+            
             const modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = `
-                <div class="step-title">✅ 견적 결과</div>
+                <div class="step-title">견적 결과</div>
                 <div class="best-price">${formattedPrice}</div>
                 <div class="result-grid">
                     <div class="result-item">
@@ -599,7 +699,7 @@
                     </div>
                     <div class="result-item">
                         <span class="result-label">통신사</span>
-                        <span class="result-value">${targetCarrier.toUpperCase()}</span>
+                        <span class="result-value ${carrierClass}">${carrierName}</span>
                     </div>
                     <div class="result-item">
                         <span class="result-label">유형</span>
@@ -625,38 +725,27 @@
             `;
         }
 
-        function formatPrice(price) {
+        function formatPriceToWon(price) {
             if (price === '-' || !price || price === '0') {
                 return '판매중지';
             }
             
-            const cleanedPrice = price.replace(/[^0-9]/g, '');
-            if (!cleanedPrice || cleanedPrice === '0') {
+            const numPrice = parseFloat(price);
+            if (isNaN(numPrice)) {
                 return '판매중지';
             }
             
-            return cleanedPrice.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원';
+            const wonPrice = Math.round(numPrice * 10000);
+            return wonPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원';
         }
 
-        function formatRetailPrice(price) {
-            if (!price) return '-';
-            const cleanedPrice = price.replace(/[^0-9]/g, '');
-            return cleanedPrice ? cleanedPrice.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원' : '-';
-        }
-
-        window.addEventListener('DOMContentLoaded', loadData);
-    </script>
         window.addEventListener('DOMContentLoaded', loadData);
         
         // 1시간마다 자동 데이터 갱신
         setInterval(() => {
             console.log('🔄 데이터 자동 갱신 중... (' + new Date().toLocaleTimeString() + ')');
             loadData();
-        }, 3600000); // 3600000ms = 1시간
+        }, 3600000);
     </script>
-</body>
-</html>
-
-    
 </body>
 </html>
