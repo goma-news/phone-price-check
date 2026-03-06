@@ -47,6 +47,7 @@
             color: rgba(255,255,255,0.85);
             margin-bottom: 30px;
             line-height: 1.6;
+            word-break: keep-all;
         }
         
         .estimate-btn {
@@ -92,6 +93,7 @@
             color: rgba(255,255,255,0.9);
             margin-bottom: 15px;
             line-height: 1.5;
+            word-break: keep-all;
         }
         
         .consult-btn {
@@ -107,6 +109,7 @@
             font-weight: 600;
             text-decoration: none;
             display: inline-block;
+            white-space: nowrap;
         }
         
         .consult-btn:hover {
@@ -422,6 +425,7 @@
             color: #6c757d;
             line-height: 1.8;
             margin-bottom: 15px;
+            word-break: keep-all;
         }
         
         .result-note-item {
@@ -450,6 +454,7 @@
             font-size: 0.95em;
             line-height: 1.6;
             margin-bottom: 20px;
+            word-break: keep-all;
         }
         
         .carrier-badge {
@@ -800,38 +805,31 @@
         }
 
         function cleanPrice(price) {
-            // undefined, null, 빈 문자열 체크
             if (!price || price.trim() === '') {
                 return '-';
             }
             
-            // #REF! 에러 체크
             if (price.toString().includes('#REF!') || price.toString().includes('REF')) {
                 return '-';
             }
             
-            // '0'만 있는 경우
             const trimmed = price.toString().trim();
             if (trimmed === '0' || trimmed === '0.0') {
                 return '-';
             }
             
-            // 숫자와 소수점, 마이너스만 남기기
             const cleaned = trimmed.replace(/[^0-9.\-]/g, '').trim();
             
-            // 빈 문자열이거나 '-'만 있으면
             if (cleaned === '' || cleaned === '-' || cleaned === '.') {
                 return '-';
             }
             
             const numValue = parseFloat(cleaned);
             
-            // 숫자가 아닌 경우만 제외 (음수는 정상!)
             if (isNaN(numValue)) {
                 return '-';
             }
             
-            // 0은 제외 (음수는 OK)
             if (numValue === 0) {
                 return '-';
             }
@@ -1025,7 +1023,6 @@
             const plan = planInfo[targetCarrier];
             const service = additionalServices[targetCarrier];
             
-            // 가격이 없거나 0인 경우 -> 문의하기 화면
             if (price === '-' || price === '0' || !price) {
                 const modalBody = document.getElementById('modalBody');
                 modalBody.innerHTML = `
@@ -1066,7 +1063,6 @@
                 return;
             }
             
-            // 정상 가격이 있는 경우
             const formattedPrice = formatPriceToWon(price);
             const retailPrice = phone.retail || 1287000;
             const estimatePrice = Math.abs(parseInt(formattedPrice.replace(/[^0-9]/g, '')));
@@ -1077,7 +1073,6 @@
                 if (discountPercent < 0) discountPercent = 0;
             }
             
-            // 음수 가격인지 체크
             const isNegativePrice = formattedPrice.startsWith('-');
             
             const modalBody = document.getElementById('modalBody');
@@ -1143,14 +1138,12 @@
                 return '판매중지';
             }
             
-            // 0만 제외
             if (numPrice === 0) {
                 return '판매중지';
             }
             
             const wonPrice = Math.round(numPrice * 10000);
             
-            // 음수면 마이너스 붙여서 표시
             if (wonPrice < 0) {
                 return '-' + Math.abs(wonPrice).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원';
             }
@@ -1160,7 +1153,6 @@
 
         window.addEventListener('DOMContentLoaded', loadData);
         
-        // 1시간마다 자동 데이터 갱신
         setInterval(() => {
             console.log('데이터 자동 갱신 중... (' + new Date().toLocaleTimeString() + ')');
             loadData();
