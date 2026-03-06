@@ -254,6 +254,27 @@
             margin: 20px 0;
         }
 
+        .plan-info {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .plan-info strong {
+            color: #856404;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .plan-info p {
+            color: #856404;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
         @media (max-width: 768px) {
             .logo {
                 font-size: 2em;
@@ -326,6 +347,13 @@
         let currentCarrier = '';
         let targetCarrier = '';
 
+        // 통신사별 요금제 정보
+        const planInfo = {
+            'SKT': { price: '109,000원', duration: '6개월' },
+            'KT': { price: '110,000원', duration: '6개월' },
+            'LG': { price: '115,000원', duration: '6개월' }
+        };
+
         async function loadData() {
             try {
                 const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
@@ -341,11 +369,8 @@
             const lines = csvText.split('\n');
             phoneData = [];
             
-            // U9:AA45 데이터 파싱 (9번째 줄부터 45번째 줄까지)
-            for (let i = 8; i < 45; i++) { // 0-based index
+            for (let i = 8; i < 45; i++) {
                 const cols = parseCSVLine(lines[i]);
-                
-                // U열(20번 인덱스)에 제품명이 있음
                 const phoneName = cols[20] ? cols[20].trim() : '';
                 
                 if (!phoneName || phoneName === '' || phoneName === '모델명') {
@@ -355,16 +380,16 @@
                 const phone = {
                     name: phoneName,
                     skt: {
-                        move: cleanPrice(cols[21]),    // V열: SKT 번호이동
-                        change: cleanPrice(cols[22])   // W열: SKT 기기변경
+                        move: cleanPrice(cols[21]),
+                        change: cleanPrice(cols[22])
                     },
                     kt: {
-                        move: cleanPrice(cols[23]),    // X열: KT 번호이동
-                        change: cleanPrice(cols[24])   // Y열: KT 기기변경
+                        move: cleanPrice(cols[23]),
+                        change: cleanPrice(cols[24])
                     },
                     lg: {
-                        move: cleanPrice(cols[25]),    // Z열: LG 번호이동
-                        change: cleanPrice(cols[26])   // AA열: LG 기기변경
+                        move: cleanPrice(cols[25]),
+                        change: cleanPrice(cols[26])
                     }
                 };
                 
@@ -372,7 +397,6 @@
             }
             
             console.log('데이터 로드 완료:', phoneData.length + '개');
-            console.log('첫 번째 데이터:', phoneData[0]);
         }
 
         function parseCSVLine(line) {
@@ -399,14 +423,10 @@
             if (!price || price.trim() === '' || price.trim() === '0') {
                 return '-';
             }
-            // 모든 비숫자 문자 제거 (쉼표, 공백, 문자 등)
-            price = price.replace(/[^0-9\-]/g, '').trim();
-            
-            // 빈 문자열이거나 0이면 -
+            price = price.replace(/[^0-9\.\-]/g, '').trim();
             if (!price || price === '0' || price === '-0') {
                 return '-';
             }
-            
             return price;
         }
 
@@ -562,8 +582,6 @@
             const phone = phoneData.find(p => p.name === selectedPhone);
             if (!phone) {
                 alert('데이터를 찾을 수 없습니다.');
-                console.log('찾는 기종:', selectedPhone);
-                console.log('전체 데이터:', phoneData);
                 return;
             }
 
@@ -580,12 +598,12 @@
                 carrierName = 'LG U+';
             }
 
-            // 번호이동 vs 기기변경 결정
             const isMove = (currentCarrier !== targetCarrier) && (currentCarrier !== '없음');
             const priceType = isMove ? 'move' : 'change';
             const typeText = isMove ? '번호이동' : '기기변경';
             
             const price = carrierData[priceType];
+            const plan = planInfo[targetCarrier];
 
             const modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = `
@@ -595,7 +613,7 @@
                     
                     ${price !== '-' && price !== '0' ? `
                         <div class="best-price">
-                            ${formatPrice(price)}만원
+                            ${formatPriceToWon(price)}원
                         </div>
                     ` : '<div class="best-price" style="background: #95a5a6;">판매 중지</div>'}
                     
@@ -609,16 +627,19 @@
                             <span class="result-value">${typeText}</span>
                         </div>
                         <div class="result-item">
-                            <span class="result-label">번호이동</span>
-                            <span class="result-value">${carrierData.move !== '-' && carrierData.move !== '0' ? formatPrice(carrierData.move) + '만원' : '판매중지'}</span>
-                        </div>
-                        <div class="result-item">
-                            <span class="result-label">기기변경</span>
-                            <span class="result-value">${carrierData.change !== '-' && carrierData.change !== '0' ? formatPrice(carrierData.change) + '만원' : '판매중지'}</span>
+                            <span class="result-label">${typeText}</span>
+                            <span class="result-value">${price !== '-' && price !== '0' ? formatPriceToWon(price) + '원' : '판매중지'}</span>
                         </div>
                     </div>
+
+                    ${price !== '-' && price !== '0' ? `
+                        <div class="plan-info">
+                            <strong>📋 요금제 정보</strong>
+                            <p>${carrierName} ${plan.price} 요금제 (${plan.duration} 유지)</p>
+                        </div>
+                    ` : ''}
                     
-                    <div class="action-buttons">
+                    <div class="action-buttons" style="margin-top: 20px;">
                         <button class="btn btn-back" onclick="showStep1()">다시 계산하기</button>
                         <button class="btn btn-next" onclick="closeModal()">닫기</button>
                     </div>
@@ -626,16 +647,16 @@
             `;
         }
 
-        function formatPrice(price) {
+        // 만원 단위를 원 단위로 변환 (64.3 -> 643,000)
+        function formatPriceToWon(price) {
             if (typeof price === 'string') {
-                // 이미 소수점이 있으면 그대로 사용
-                if (price.includes('.')) {
-                    return price;
-                }
                 price = parseFloat(price);
             }
             if (isNaN(price)) return '0';
-            return price.toFixed(1);
+            
+            // 만원 단위를 원 단위로 변환
+            const wonPrice = Math.round(price * 10000);
+            return wonPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
         window.addEventListener('DOMContentLoaded', loadData);
