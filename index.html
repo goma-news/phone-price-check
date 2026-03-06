@@ -261,6 +261,7 @@
             color: #2c3e50;
             font-weight: 600;
             font-size: 1.1em;
+            text-align: right;
         }
         
         .result-value.highlight {
@@ -349,6 +350,9 @@
                 const csvText = await response.text();
                 parseCSVData(csvText);
                 console.log('데이터 로드 완료:', phoneData.length + '개');
+                if (phoneData.length > 0) {
+                    console.log('첫 번째 데이터:', phoneData[0]);
+                }
             } catch (error) {
                 console.error('데이터 로딩 실패:', error);
             }
@@ -358,11 +362,13 @@
             const lines = csv.split('\n');
             phoneData = [];
             
-            for (let i = 10; i < 46; i++) {
+            // 9번째 줄부터 시작 (인덱스 8부터)
+            for (let i = 8; i < 45; i++) {
                 const cols = parseCSVLine(lines[i]);
                 const name = cols[1]?.trim();
                 const retail = cols[2]?.trim();
                 
+                // 빈 행이나 날짜 형식 제외
                 if (!name || name === '모델명' || name === '' || /^\d{4}-\d{1,2}-\d{1,2}$/.test(name)) {
                     continue;
                 }
@@ -371,16 +377,16 @@
                     name: name,
                     retail: retail,
                     skt: {
-                        move: cleanPrice(cols[21]),
-                        change: cleanPrice(cols[22])
+                        move: cleanPrice(cols[5]),    // F열: SKT 이동
+                        change: cleanPrice(cols[6])    // G열: SKT 기변
                     },
                     kt: {
-                        move: cleanPrice(cols[23]),
-                        change: cleanPrice(cols[24])
+                        move: cleanPrice(cols[11]),   // L열: KT 이동
+                        change: cleanPrice(cols[12])   // M열: KT 기변
                     },
                     lg: {
-                        move: cleanPrice(cols[25]),
-                        change: cleanPrice(cols[26])
+                        move: cleanPrice(cols[15]),   // P열: LG 이동
+                        change: cleanPrice(cols[16])   // Q열: LG 기변
                     }
                 });
             }
@@ -409,7 +415,8 @@
             if (!price || price.trim() === '' || price.trim() === '0') {
                 return '-';
             }
-            return price.replace(/[^0-9\-]/g, '').trim() || '-';
+            const cleaned = price.replace(/[^0-9\-]/g, '').trim();
+            return cleaned || '-';
         }
 
         function startEstimate() {
@@ -567,7 +574,7 @@
             const isMove = currentCarrier !== targetCarrier;
             const priceType = isMove ? 'move' : 'change';
             const price = phone[targetCarrier][priceType];
-            const formattedPrice = formatPriceToWon(price);
+            const formattedPrice = formatPrice(price);
             const retailPrice = formatRetailPrice(phone.retail);
             
             const plan = planInfo[targetCarrier];
@@ -618,34 +625,23 @@
             `;
         }
 
-        function formatPriceToWon(price) {
-            if (price === '-' || !price) {
+        function formatPrice(price) {
+            if (price === '-' || !price || price === '0') {
                 return '판매중지';
             }
             
-            let numPrice;
-            if (typeof price === 'string') {
-                numPrice = parseFloat(price.replace(/,/g, ''));
-            } else {
-                numPrice = price;
-            }
-            
-            if (isNaN(numPrice)) {
+            const cleanedPrice = price.replace(/[^0-9]/g, '');
+            if (!cleanedPrice || cleanedPrice === '0') {
                 return '판매중지';
             }
             
-            const wonPrice = Math.round(numPrice * 10000);
-            return formatPrice(wonPrice) + '원';
+            return cleanedPrice.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원';
         }
 
         function formatRetailPrice(price) {
             if (!price) return '-';
             const cleanedPrice = price.replace(/[^0-9]/g, '');
-            return cleanedPrice ? formatPrice(cleanedPrice) + '원' : '-';
-        }
-
-        function formatPrice(price) {
-            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            return cleanedPrice ? cleanedPrice.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원' : '-';
         }
 
         window.addEventListener('DOMContentLoaded', loadData);
