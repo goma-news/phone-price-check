@@ -10,55 +10,53 @@
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-
+        
         .main-container {
             text-align: center;
             padding: 40px 20px;
         }
-
+        
         .logo {
-            font-size: 3em;
+            font-size: 3.5em;
             font-weight: 700;
-            color: #2c3e50;
+            color: #fff;
             margin-bottom: 20px;
-            letter-spacing: -1px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
-
+        
         .subtitle {
-            font-size: 1.3em;
-            color: #7f8c8d;
+            font-size: 1.4em;
+            color: rgba(255,255,255,0.9);
             margin-bottom: 50px;
-            font-weight: 400;
         }
-
+        
         .estimate-btn {
-            background: #3498db;
-            color: white;
+            background: #fff;
+            color: #667eea;
             border: none;
             padding: 18px 60px;
             font-size: 1.2em;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             font-weight: 600;
         }
-
+        
         .estimate-btn:hover {
-            background: #2980b9;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
-
+        
         .modal {
             display: none;
             position: fixed;
@@ -66,115 +64,129 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
+            background: rgba(0,0,0,0.6);
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            z-index: 1000;
         }
-
+        
         .modal.active {
             display: flex;
         }
-
+        
         .modal-content {
-            background: white;
+            background: #fff;
             border-radius: 20px;
             padding: 40px;
             max-width: 500px;
-            width: 100%;
-            max-height: 80vh;
+            width: 90%;
+            max-height: 85vh;
             overflow-y: auto;
             position: relative;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         }
-
+        
         .close-modal {
             position: absolute;
             top: 20px;
-            right: 20px;
-            font-size: 28px;
+            right: 25px;
+            font-size: 32px;
             cursor: pointer;
             color: #95a5a6;
-            transition: color 0.3s;
+            line-height: 1;
         }
-
+        
         .close-modal:hover {
             color: #2c3e50;
         }
-
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #ecf0f1;
+            border-radius: 3px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s;
+        }
+        
         .step-title {
             font-size: 1.5em;
             color: #2c3e50;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             font-weight: 600;
         }
-
+        
         .option-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
-
+        
         .option-btn {
-            background: #ecf0f1;
-            border: 2px solid transparent;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
             padding: 20px;
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s;
             font-size: 1.1em;
-            color: #2c3e50;
+            color: #495057;
             font-weight: 500;
         }
-
+        
+        .option-btn.selected,
         .option-btn:hover {
             background: #e8f4f8;
-            border-color: #3498db;
+            border-color: #667eea;
+            color: #667eea;
         }
-
+        
         .option-btn.selected {
-            background: #3498db;
-            color: white;
-            border-color: #3498db;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border-color: #667eea;
         }
-
+        
         .phone-list {
             max-height: 400px;
             overflow-y: auto;
             margin-bottom: 20px;
         }
-
+        
         .phone-item {
-            background: #ecf0f1;
-            border: 2px solid transparent;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
             padding: 15px 20px;
             border-radius: 10px;
             margin-bottom: 10px;
             cursor: pointer;
             transition: all 0.3s;
-            text-align: left;
-            font-size: 1em;
         }
-
+        
+        .phone-item.selected,
         .phone-item:hover {
             background: #e8f4f8;
-            border-color: #3498db;
+            border-color: #667eea;
         }
-
+        
         .phone-item.selected {
-            background: #3498db;
-            color: white;
-            border-color: #3498db;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border-color: #667eea;
         }
-
-        .action-buttons {
+        
+        .btn-group {
             display: flex;
             gap: 10px;
-            justify-content: space-between;
         }
-
+        
         .btn {
             flex: 1;
             padding: 15px;
@@ -185,137 +197,108 @@
             transition: all 0.3s;
             font-weight: 600;
         }
-
+        
         .btn-back {
             background: #95a5a6;
-            color: white;
+            color: #fff;
         }
-
+        
         .btn-back:hover {
             background: #7f8c8d;
         }
-
+        
         .btn-next {
-            background: #3498db;
-            color: white;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
         }
-
+        
         .btn-next:hover {
-            background: #2980b9;
+            opacity: 0.9;
         }
-
-        .result-container {
+        
+        .btn-next:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .best-price {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            font-size: 1.6em;
+            font-weight: 700;
+            margin: 20px 0;
             text-align: center;
         }
-
-        .result-phone {
-            font-size: 1.8em;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-weight: 700;
-        }
-
+        
         .result-grid {
             background: #f8f9fa;
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 20px;
         }
-
+        
         .result-item {
             display: flex;
             justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #ecf0f1;
+            padding: 14px 0;
+            border-bottom: 1px solid #e9ecef;
         }
-
+        
         .result-item:last-child {
             border-bottom: none;
         }
-
+        
         .result-label {
-            color: #7f8c8d;
+            color: #6c757d;
             font-weight: 500;
+            font-size: 1em;
         }
-
+        
         .result-value {
             color: #2c3e50;
             font-weight: 600;
             font-size: 1.1em;
         }
-
-        .best-price {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            font-size: 1.5em;
-            font-weight: 700;
-            margin: 20px 0;
+        
+        .result-value.highlight {
+            color: #667eea;
+            font-size: 1.3em;
         }
-
-        .plan-info {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        .plan-info strong {
-            color: #856404;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        .plan-info p {
-            color: #856404;
+        
+        .result-value.strikethrough {
+            text-decoration: line-through;
+            color: #95a5a6;
             font-size: 0.95em;
-            line-height: 1.5;
         }
-
-        @media (max-width: 768px) {
-            .logo {
-                font-size: 2em;
-            }
-
-            .subtitle {
-                font-size: 1.1em;
-            }
-
-            .modal-content {
-                padding: 30px 20px;
-            }
-
-            .option-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: #ecf0f1;
-            border-radius: 2px;
-            margin-bottom: 30px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: #3498db;
-            transition: width 0.3s;
-        }
-
+        
         .carrier-badge {
-            display: inline-block;
             background: #e8f4f8;
-            color: #3498db;
+            color: #667eea;
             padding: 4px 10px;
             border-radius: 6px;
             font-size: 0.85em;
             margin-left: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.5em;
+            }
+            
+            .subtitle {
+                font-size: 1.1em;
+            }
+            
+            .option-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                padding: 30px 20px;
+            }
         }
     </style>
 </head>
@@ -346,11 +329,17 @@
         let selectedPhone = '';
         let currentCarrier = '';
         let targetCarrier = '';
-
+        
         const planInfo = {
-            'SKT': { price: '109,000원', duration: '6개월' },
-            'KT': { price: '110,000원', duration: '6개월' },
-            'LG': { price: '115,000원', duration: '6개월' }
+            'skt': { name: 'SKT 109,000원 요금제', duration: '6개월 유지' },
+            'kt': { name: 'KT 110,000원 요금제', duration: '6개월 유지' },
+            'lg': { name: 'LG 115,000원 요금제', duration: '6개월 유지' }
+        };
+        
+        const additionalServices = {
+            'skt': { name: '우주패스', price: '9,900원' },
+            'kt': { name: '필수팩 지니/밀리', price: '9,900원' },
+            'lg': { name: 'V컬러링 음악감상', price: '8,800원' }
         };
 
         async function loadData() {
@@ -359,25 +348,28 @@
                 const response = await fetch(url);
                 const csvText = await response.text();
                 parseCSVData(csvText);
+                console.log('데이터 로드 완료:', phoneData.length + '개');
             } catch (error) {
                 console.error('데이터 로딩 실패:', error);
             }
         }
 
-        function parseCSVData(csvText) {
-            const lines = csvText.split('\n');
+        function parseCSVData(csv) {
+            const lines = csv.split('\n');
             phoneData = [];
             
             for (let i = 10; i < 46; i++) {
                 const cols = parseCSVLine(lines[i]);
-                const phoneName = cols[20] ? cols[20].trim() : '';
+                const name = cols[1]?.trim();
+                const retail = cols[2]?.trim();
                 
-                if (!phoneName || phoneName === '' || phoneName === '모델명') {
+                if (!name || name === '모델명' || name === '' || /^\d{4}-\d{1,2}-\d{1,2}$/.test(name)) {
                     continue;
                 }
                 
-                const phone = {
-                    name: phoneName,
+                phoneData.push({
+                    name: name,
+                    retail: retail,
                     skt: {
                         move: cleanPrice(cols[21]),
                         change: cleanPrice(cols[22])
@@ -390,12 +382,8 @@
                         move: cleanPrice(cols[25]),
                         change: cleanPrice(cols[26])
                     }
-                };
-                
-                phoneData.push(phone);
+                });
             }
-            
-            console.log('로드완료:', phoneData.length + '개');
         }
 
         function parseCSVLine(line) {
@@ -403,8 +391,7 @@
             let current = '';
             let inQuotes = false;
             
-            for (let i = 0; i < line.length; i++) {
-                const char = line[i];
+            for (let char of line) {
                 if (char === '"') {
                     inQuotes = !inQuotes;
                 } else if (char === ',' && !inQuotes) {
@@ -422,11 +409,7 @@
             if (!price || price.trim() === '' || price.trim() === '0') {
                 return '-';
             }
-            price = price.replace(/[^0-9\.\-]/g, '').trim();
-            if (!price || price === '0' || price === '-0') {
-                return '-';
-            }
-            return price;
+            return price.replace(/[^0-9\-]/g, '').trim() || '-';
         }
 
         function startEstimate() {
@@ -449,6 +432,10 @@
 
         function closeModal() {
             document.getElementById('modal').classList.remove('active');
+            resetState();
+        }
+
+        function resetState() {
             currentStep = 1;
             selectedBrand = '';
             selectedPhone = '';
@@ -457,31 +444,32 @@
         }
 
         function updateProgress() {
-            const progress = (currentStep / 5) * 100;
-            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressBar').style.width = (currentStep / 5 * 100) + '%';
         }
 
         function showStep1() {
             currentStep = 1;
             updateProgress();
+            
             const modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = `
-                <h2 class="step-title">휴대폰을 선택해주세요</h2>
+                <div class="step-title">📱 휴대폰 브랜드를 선택해주세요</div>
                 <div class="option-grid">
-                    <button class="option-btn" onclick="selectBrand('갤럭시')">📱 갤럭시</button>
-                    <button class="option-btn" onclick="selectBrand('아이폰')">🍎 아이폰</button>
-                    <button class="option-btn" onclick="selectBrand('키즈폰')">👶 키즈폰</button>
-                    <button class="option-btn" onclick="selectBrand('효도폰')">👴 효도폰</button>
+                    <div class="option-btn" onclick="selectBrand('갤럭시')">갤럭시</div>
+                    <div class="option-btn" onclick="selectBrand('아이폰')">아이폰</div>
+                    <div class="option-btn" onclick="selectBrand('키즈폰')">키즈폰</div>
+                    <div class="option-btn" onclick="selectBrand('효도폰')">효도폰</div>
                 </div>
             `;
         }
 
         function selectBrand(brand) {
-            selectedBrand = brand;
             if (brand === '키즈폰' || brand === '효도폰') {
-                alert('해당 카테고리는 준비중입니다.');
+                alert('준비 중입니다.');
                 return;
             }
+            
+            selectedBrand = brand;
             showStep2();
         }
 
@@ -489,26 +477,23 @@
             currentStep = 2;
             updateProgress();
             
-            let phones = phoneData.filter(phone => {
-                if (selectedBrand === '갤럭시') {
-                    return !phone.name.includes('아이폰');
-                } else if (selectedBrand === '아이폰') {
-                    return phone.name.includes('아이폰');
-                }
-                return false;
-            });
-
+            let filteredPhones = [];
+            
+            if (selectedBrand === '갤럭시') {
+                filteredPhones = phoneData.filter(phone => !phone.name.includes('아이폰'));
+            } else if (selectedBrand === '아이폰') {
+                filteredPhones = phoneData.filter(phone => phone.name.includes('아이폰'));
+            }
+            
             const modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = `
-                <h2 class="step-title">${selectedBrand} 기종 선택</h2>
+                <div class="step-title">📱 기종을 선택해주세요</div>
                 <div class="phone-list">
-                    ${phones.map(phone => `
-                        <div class="phone-item" onclick="selectPhone('${phone.name}')">
-                            ${phone.name}
-                        </div>
+                    ${filteredPhones.map(phone => `
+                        <div class="phone-item" onclick="selectPhone('${phone.name}')">${phone.name}</div>
                     `).join('')}
                 </div>
-                <div class="action-buttons">
+                <div class="btn-group">
                     <button class="btn btn-back" onclick="showStep1()">이전</button>
                 </div>
             `;
@@ -516,26 +501,23 @@
 
         function selectPhone(phoneName) {
             selectedPhone = phoneName;
-            document.querySelectorAll('.phone-item').forEach(item => {
-                item.classList.remove('selected');
-            });
-            event.target.classList.add('selected');
-            setTimeout(() => showStep3(), 300);
+            showStep3();
         }
 
         function showStep3() {
             currentStep = 3;
             updateProgress();
+            
             const modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = `
-                <h2 class="step-title">현재 사용중인 통신사는?</h2>
+                <div class="step-title">📡 현재 사용 중인 통신사를 선택해주세요</div>
                 <div class="option-grid">
-                    <button class="option-btn" onclick="selectCurrentCarrier('SKT')">SKT</button>
-                    <button class="option-btn" onclick="selectCurrentCarrier('KT')">KT</button>
-                    <button class="option-btn" onclick="selectCurrentCarrier('LG')">LG U+</button>
-                    <button class="option-btn" onclick="selectCurrentCarrier('없음')">없음</button>
+                    <div class="option-btn" onclick="selectCurrentCarrier('skt')">SKT</div>
+                    <div class="option-btn" onclick="selectCurrentCarrier('kt')">KT</div>
+                    <div class="option-btn" onclick="selectCurrentCarrier('lg')">LG U+</div>
+                    <div class="option-btn" onclick="selectCurrentCarrier('other')">알뜰폰</div>
                 </div>
-                <div class="action-buttons" style="margin-top: 20px;">
+                <div class="btn-group">
                     <button class="btn btn-back" onclick="showStep2()">이전</button>
                 </div>
             `;
@@ -549,21 +531,22 @@
         function showStep4() {
             currentStep = 4;
             updateProgress();
+            
             const modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = `
-                <h2 class="step-title">변경할 통신사를 선택해주세요</h2>
+                <div class="step-title">📡 원하는 통신사를 선택해주세요</div>
                 <div class="option-grid">
-                    <button class="option-btn" onclick="selectTargetCarrier('SKT')">
-                        SKT ${currentCarrier === 'SKT' ? '<span class="carrier-badge">유지</span>' : ''}
-                    </button>
-                    <button class="option-btn" onclick="selectTargetCarrier('KT')">
-                        KT ${currentCarrier === 'KT' ? '<span class="carrier-badge">유지</span>' : ''}
-                    </button>
-                    <button class="option-btn" onclick="selectTargetCarrier('LG')">
-                        LG U+ ${currentCarrier === 'LG' ? '<span class="carrier-badge">유지</span>' : ''}
-                    </button>
+                    <div class="option-btn" onclick="selectTargetCarrier('skt')">
+                        SKT ${currentCarrier === 'skt' ? '<span class="carrier-badge">유지</span>' : ''}
+                    </div>
+                    <div class="option-btn" onclick="selectTargetCarrier('kt')">
+                        KT ${currentCarrier === 'kt' ? '<span class="carrier-badge">유지</span>' : ''}
+                    </div>
+                    <div class="option-btn" onclick="selectTargetCarrier('lg')">
+                        LG U+ ${currentCarrier === 'lg' ? '<span class="carrier-badge">유지</span>' : ''}
+                    </div>
                 </div>
-                <div class="action-buttons" style="margin-top: 20px;">
+                <div class="btn-group">
                     <button class="btn btn-back" onclick="showStep3()">이전</button>
                 </div>
             `;
@@ -579,81 +562,90 @@
             updateProgress();
             
             const phone = phoneData.find(p => p.name === selectedPhone);
-            if (!phone) {
-                alert('데이터를 찾을 수 없습니다.');
-                return;
-            }
-
-            let carrierData;
-            let carrierName;
-            if (targetCarrier === 'SKT') {
-                carrierData = phone.skt;
-                carrierName = 'SKT';
-            } else if (targetCarrier === 'KT') {
-                carrierData = phone.kt;
-                carrierName = 'KT';
-            } else if (targetCarrier === 'LG') {
-                carrierData = phone.lg;
-                carrierName = 'LG U+';
-            }
-
-            const isMove = (currentCarrier !== targetCarrier) && (currentCarrier !== '없음');
-            const priceType = isMove ? 'move' : 'change';
-            const typeText = isMove ? '번호이동' : '기기변경';
+            if (!phone) return;
             
-            const price = carrierData[priceType];
+            const isMove = currentCarrier !== targetCarrier;
+            const priceType = isMove ? 'move' : 'change';
+            const price = phone[targetCarrier][priceType];
+            const formattedPrice = formatPriceToWon(price);
+            const retailPrice = formatRetailPrice(phone.retail);
+            
             const plan = planInfo[targetCarrier];
-
+            const service = additionalServices[targetCarrier];
+            
             const modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = `
-                <div class="result-container">
-                    <h2 class="step-title">견적 결과</h2>
-                    <div class="result-phone">${selectedPhone}</div>
-                    
-                    ${price !== '-' && price !== '0' ? `
-                        <div class="best-price">
-                            ${formatPriceToWon(price)}원
-                        </div>
-                    ` : '<div class="best-price" style="background: #95a5a6;">판매 중지</div>'}
-                    
-                    <div class="result-grid">
-                        <div class="result-item">
-                            <span class="result-label">통신사</span>
-                            <span class="result-value">${carrierName}</span>
-                        </div>
-                        <div class="result-item">
-                            <span class="result-label">유형</span>
-                            <span class="result-value">${typeText}</span>
-                        </div>
-                        <div class="result-item">
-                            <span class="result-label">${typeText}</span>
-                            <span class="result-value">${price !== '-' && price !== '0' ? formatPriceToWon(price) + '원' : '판매중지'}</span>
-                        </div>
+                <div class="step-title">✅ 견적 결과</div>
+                <div class="best-price">${formattedPrice}</div>
+                <div class="result-grid">
+                    <div class="result-item">
+                        <span class="result-label">모델명</span>
+                        <span class="result-value">${phone.name}</span>
                     </div>
-
-                    ${price !== '-' && price !== '0' ? `
-                        <div class="plan-info">
-                            <strong>📋 요금제 정보</strong>
-                            <p>${carrierName} ${plan.price} 요금제 (${plan.duration} 유지)</p>
-                        </div>
-                    ` : ''}
-                    
-                    <div class="action-buttons" style="margin-top: 20px;">
-                        <button class="btn btn-back" onclick="showStep1()">다시 계산하기</button>
-                        <button class="btn btn-next" onclick="closeModal()">닫기</button>
+                    <div class="result-item">
+                        <span class="result-label">기존 가격</span>
+                        <span class="result-value strikethrough">${retailPrice}</span>
                     </div>
+                    <div class="result-item">
+                        <span class="result-label">견적 가격</span>
+                        <span class="result-value highlight">${formattedPrice}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">통신사</span>
+                        <span class="result-value">${targetCarrier.toUpperCase()}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">유형</span>
+                        <span class="result-value">${isMove ? '번호이동' : '기기변경'}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">${isMove ? '번호이동 가격' : '기기변경 가격'}</span>
+                        <span class="result-value">${formattedPrice}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">요금제</span>
+                        <span class="result-value">${plan.name}<br><small>(${plan.duration})</small></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">부가 서비스</span>
+                        <span class="result-value">${service.name}<br><small>(${service.price})</small></span>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-back" onclick="startEstimate()">다시 계산하기</button>
+                    <button class="btn btn-next" onclick="closeModal()">닫기</button>
                 </div>
             `;
         }
 
         function formatPriceToWon(price) {
-            if (typeof price === 'string') {
-                price = parseFloat(price);
+            if (price === '-' || !price) {
+                return '판매중지';
             }
-            if (isNaN(price)) return '0';
             
-            const wonPrice = Math.round(price * 10000);
-            return wonPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            let numPrice;
+            if (typeof price === 'string') {
+                numPrice = parseFloat(price.replace(/,/g, ''));
+            } else {
+                numPrice = price;
+            }
+            
+            if (isNaN(numPrice)) {
+                return '판매중지';
+            }
+            
+            const wonPrice = Math.round(numPrice * 10000);
+            return formatPrice(wonPrice) + '원';
+        }
+
+        function formatRetailPrice(price) {
+            if (!price) return '-';
+            const cleanedPrice = price.replace(/[^0-9]/g, '');
+            return cleanedPrice ? formatPrice(cleanedPrice) + '원' : '-';
+        }
+
+        function formatPrice(price) {
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         }
 
         window.addEventListener('DOMContentLoaded', loadData);
