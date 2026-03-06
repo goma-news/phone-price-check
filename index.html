@@ -59,7 +59,6 @@
             box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
         }
 
-        /* 모달 스타일 */
         .modal {
             display: none;
             position: fixed;
@@ -338,7 +337,6 @@
         let currentCarrier = '';
         let targetCarrier = '';
 
-        // 데이터 로드
         async function loadData() {
             try {
                 const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
@@ -354,10 +352,11 @@
             const lines = csvText.split('\n');
             phoneData = [];
             
-            for (let i = 8; i < 45; i++) {
+            // 데이터는 9번째 줄부터 시작 (0-based index로 8)
+            for (let i = 8; i < lines.length; i++) {
                 const cols = parseCSVLine(lines[i]);
                 
-                if (!cols[1] || cols[1].trim() === '' || cols[1] === '모델명') {
+                if (!cols[1] || cols[1].trim() === '' || cols[1] === '모델명' || cols[1] === '부가조건') {
                     continue;
                 }
                 
@@ -365,27 +364,29 @@
                     name: cols[1].trim(),
                     retail: cols[2],
                     skt: {
-                        subsidy_new: cleanPrice(cols[3]),
-                        subsidy_change: cleanPrice(cols[4]),
-                        move: cleanPrice(cols[5]),
-                        change: cleanPrice(cols[6])
+                        subsidy_new: cleanPrice(cols[3]),   // D열: 공시/번이
+                        subsidy_change: cleanPrice(cols[4]), // E열: 공시/기변
+                        move: cleanPrice(cols[5]),           // F열: 이동
+                        change: cleanPrice(cols[6])          // G열: 기변
                     },
                     kt: {
-                        subsidy_new: cleanPrice(cols[7]),
-                        subsidy_change: cleanPrice(cols[8]),
-                        move: cleanPrice(cols[9]),
-                        change: cleanPrice(cols[10])
+                        subsidy_new: cleanPrice(cols[10]),   // K열: 공시/번이
+                        subsidy_change: cleanPrice(cols[11]), // L열: 공시/기변
+                        move: cleanPrice(cols[12]),          // M열: 이동
+                        change: cleanPrice(cols[13])         // N열: 기변
                     },
                     lg: {
-                        subsidy_new: cleanPrice(cols[11]),
-                        subsidy_change: cleanPrice(cols[12]),
-                        move: cleanPrice(cols[13]),
-                        change: cleanPrice(cols[14])
+                        subsidy_new: cleanPrice(cols[14]),   // O열: 공시/번이
+                        subsidy_change: cleanPrice(cols[15]), // P열: 공시/기변
+                        move: cleanPrice(cols[16]),          // Q열: 이동
+                        change: cleanPrice(cols[17])         // R열: 기변
                     }
                 };
                 
                 phoneData.push(phone);
             }
+            
+            console.log('데이터 로드 완료:', phoneData.length + '개');
         }
 
         function parseCSVLine(line) {
@@ -412,7 +413,8 @@
             if (!price || price.trim() === '' || price.trim() === '0') {
                 return '-';
             }
-            price = price.replace(/[^0-9\-]/g, '');
+            // 쉼표와 공백 제거, 숫자만 추출
+            price = price.replace(/[^0-9\-]/g, '').trim();
             return price || '-';
         }
 
@@ -448,7 +450,6 @@
             document.getElementById('progressBar').style.width = progress + '%';
         }
 
-        // Step 1: 브랜드 선택
         function showStep1() {
             currentStep = 1;
             updateProgress();
@@ -473,14 +474,14 @@
             showStep2();
         }
 
-        // Step 2: 기종 선택
         function showStep2() {
             currentStep = 2;
             updateProgress();
             
             let phones = phoneData.filter(phone => {
                 if (selectedBrand === '갤럭시') {
-                    return phone.name.includes('S') || phone.name.includes('Z') || phone.name.includes('A') || phone.name.includes('갤럭시');
+                    // 아이폰이 아닌 것만 (갤럭시, Z, A, S 등)
+                    return !phone.name.includes('아이폰');
                 } else if (selectedBrand === '아이폰') {
                     return phone.name.includes('아이폰');
                 }
@@ -512,7 +513,6 @@
             setTimeout(() => showStep3(), 300);
         }
 
-        // Step 3: 현재 통신사 선택
         function showStep3() {
             currentStep = 3;
             updateProgress();
@@ -523,7 +523,7 @@
                     <button class="option-btn" onclick="selectCurrentCarrier('SKT')">SKT</button>
                     <button class="option-btn" onclick="selectCurrentCarrier('KT')">KT</button>
                     <button class="option-btn" onclick="selectCurrentCarrier('LG')">LG U+</button>
-                    <button class="option-btn" onclick="selectCurrentCarrier('알뜰')">알뜰폰</button>
+                    <button class="option-btn" onclick="selectCurrentCarrier('없음')">없음</button>
                 </div>
                 <div class="action-buttons" style="margin-top: 20px;">
                     <button class="btn btn-back" onclick="showStep2()">이전</button>
@@ -536,7 +536,6 @@
             showStep4();
         }
 
-        // Step 4: 원하는 통신사 선택
         function showStep4() {
             currentStep = 4;
             updateProgress();
@@ -553,9 +552,6 @@
                     <button class="option-btn" onclick="selectTargetCarrier('LG')">
                         LG U+ ${currentCarrier === 'LG' ? '<span class="carrier-badge">유지</span>' : ''}
                     </button>
-                    <button class="option-btn" onclick="selectTargetCarrier('알뜰')">
-                        알뜰폰 ${currentCarrier === '알뜰' ? '<span class="carrier-badge">유지</span>' : ''}
-                    </button>
                 </div>
                 <div class="action-buttons" style="margin-top: 20px;">
                     <button class="btn btn-back" onclick="showStep3()">이전</button>
@@ -568,7 +564,6 @@
             showResult();
         }
 
-        // Step 5: 결과 표시
         function showResult() {
             currentStep = 5;
             updateProgress();
@@ -579,7 +574,6 @@
                 return;
             }
 
-            // 통신사 데이터 가져오기
             let carrierData;
             let carrierName;
             if (targetCarrier === 'SKT') {
@@ -591,13 +585,10 @@
             } else if (targetCarrier === 'LG') {
                 carrierData = phone.lg;
                 carrierName = 'LG U+';
-            } else {
-                alert('알뜰폰 데이터는 준비중입니다.');
-                return;
             }
 
             // 번호이동 vs 기기변경 결정
-            const isMove = currentCarrier !== targetCarrier;
+            const isMove = (currentCarrier !== targetCarrier) && (currentCarrier !== '없음');
             const priceType = isMove ? 'move' : 'change';
             const typeText = isMove ? '번호이동' : '기기변경';
             
@@ -662,7 +653,6 @@
             return formatPrice(cleaned) + '원';
         }
 
-        // 페이지 로드시 데이터 미리 로드
         window.addEventListener('DOMContentLoaded', loadData);
     </script>
 </body>
