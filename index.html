@@ -854,7 +854,7 @@
                 if (cols.length < 27) continue;
                 
                 const name = cols[20]?.trim();
-                if (!name || name === '') continue;
+                if (!name || name === '' || name === '모델명') continue;
 
                 const retailPrice = cols[2]?.trim() || '0';
 
