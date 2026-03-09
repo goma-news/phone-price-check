@@ -223,6 +223,10 @@
             border-color: #667eea;
         }
 
+        .option-btn.galaxy-brand {
+            color: #2196f3 !important;
+        }
+
         .option-btn.skt-color {
             color: #9b59b6 !important;
             border-color: #9b59b6 !important;
@@ -262,6 +266,26 @@
             transform: translateX(5px);
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
             border-color: #667eea;
+        }
+
+        .phone-s26 {
+            color: #2196f3 !important;
+        }
+
+        .phone-flip-fold {
+            color: #9b59b6 !important;
+        }
+
+        .phone-s25 {
+            color: #333 !important;
+        }
+
+        .phone-s24 {
+            color: #4caf50 !important;
+        }
+
+        .phone-iphone17 {
+            color: #ff9800 !important;
         }
 
         .btn-group {
@@ -938,7 +962,7 @@
             document.getElementById('modalBody').innerHTML = `
                 <div class="step-title">원하시는 휴대폰 브랜드를 선택해주세요</div>
                 <div class="option-grid">
-                    <button class="option-btn" onclick="selectBrand('갤럭시')">갤럭시</button>
+                    <button class="option-btn galaxy-brand" onclick="selectBrand('갤럭시')">갤럭시</button>
                     <button class="option-btn" onclick="selectBrand('아이폰')">아이폰</button>
                 </div>
             `;
@@ -958,11 +982,30 @@
                 filteredPhones = phoneData.filter(p => !p.name.includes('아이폰'));
             } else if (selectedBrand === '아이폰') {
                 filteredPhones = phoneData.filter(p => p.name.includes('아이폰'));
+                filteredPhones.sort((a, b) => {
+                    const aIs17 = a.name.includes('아이폰17');
+                    const bIs17 = b.name.includes('아이폰17');
+                    if (aIs17 && !bIs17) return -1;
+                    if (!aIs17 && bIs17) return 1;
+                    return 0;
+                });
             }
 
-            let phoneListHTML = filteredPhones.map(phone => 
-                `<div class="phone-item" onclick="selectPhone('${phone.name}')">${phone.name}</div>`
-            ).join('');
+            let phoneListHTML = filteredPhones.map(phone => {
+                let colorClass = '';
+                if (phone.name.includes('S26')) {
+                    colorClass = 'phone-s26';
+                } else if (phone.name.includes('플립') || phone.name.includes('폴드')) {
+                    colorClass = 'phone-flip-fold';
+                } else if (phone.name.includes('S 25') || phone.name.includes('S25')) {
+                    colorClass = 'phone-s25';
+                } else if (phone.name.includes('S 24') || phone.name.includes('S24')) {
+                    colorClass = 'phone-s24';
+                } else if (phone.name.includes('아이폰17')) {
+                    colorClass = 'phone-iphone17';
+                }
+                return `<div class="phone-item ${colorClass}" onclick="selectPhone('${phone.name}')">${phone.name}</div>`;
+            }).join('');
 
             document.getElementById('modalBody').innerHTML = `
                 <div class="step-title">기종을 선택해주세요</div>
