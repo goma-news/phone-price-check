@@ -203,6 +203,17 @@
             margin-bottom: 20px;
         }
 
+        .option-grid-three {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .option-grid-three .option-btn:last-child {
+            grid-column: 1 / -1;
+        }
+
         .option-btn {
             background: #fff;
             border: 2px solid #e9ecef;
@@ -268,6 +279,18 @@
             border-color: #667eea;
         }
 
+        .phone-item.contact-item {
+            background: #fff3cd;
+            border-color: #ffc107;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .phone-item.contact-item:hover {
+            background: #ffe69c;
+            transform: scale(1.02);
+        }
+
         .phone-s26 {
             color: #2196f3 !important;
         }
@@ -286,6 +309,10 @@
 
         .phone-iphone17 {
             color: #ff9800 !important;
+        }
+
+        .phone-carrier-skt {
+            color: #ff0000 !important;
         }
 
         .btn-group {
@@ -598,6 +625,15 @@
                 gap: 12px;
             }
 
+            .option-grid-three {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .option-grid-three .option-btn:last-child {
+                grid-column: 1;
+            }
+
             .option-btn {
                 padding: 18px;
                 font-size: 1em;
@@ -780,9 +816,11 @@
         const GID = '647819140';
 
         let phoneData = [];
+        let kidsPhoneData = [];
         let currentStep = 1;
         let selectedBrand = '';
         let selectedPhone = '';
+        let selectedKidsPhone = null;
         let currentCarrier = '';
         let targetCarrier = '';
         let updateTimeText = '';
@@ -805,11 +843,13 @@
                 const csvText = await response.text();
                 const result = parseCSVData(csvText);
                 phoneData = result.phones;
+                kidsPhoneData = result.kidsPhones;
                 updateTimeText = result.updateTime;
                 
                 document.getElementById('updateTime').textContent = `최신 업데이트: ${updateTimeText}`;
                 
                 console.log('✅ 데이터 로드 완료:', phoneData.length, '개 제품');
+                console.log('✅ 키즈폰 데이터:', kidsPhoneData.length, '개');
                 console.log('✅ 업데이트 시간:', updateTimeText);
             } catch (error) {
                 console.error('❌ 데이터 로드 실패:', error);
@@ -864,6 +904,7 @@
         function parseCSVData(csvText) {
             const lines = csvText.split('\n');
             const smartphones = [];
+            const kidsPhones = [];
             let updateTime = '불러오는 중...';
 
             if (lines.length > 4) {
@@ -873,6 +914,7 @@
                 }
             }
 
+            // 스마트폰 데이터 (U9:AA43)
             for (let i = 9; i < 43; i++) {
                 if (i >= lines.length) break;
                 
@@ -905,7 +947,56 @@
                 smartphones.push(phone);
             }
 
-            return { phones: smartphones, updateTime: updateTime };
+            // 키즈폰/효도폰 데이터 (U51:W60)
+            // SKT: U51:U52 (lines[50:51])
+            for (let i = 50; i <= 51; i++) {
+                if (i >= lines.length) break;
+                const cols = parseCSVLine(lines[i]);
+                if (cols.length < 23) continue;
+                const name = cols[20]?.trim();
+                if (!name || name === '') continue;
+                
+                kidsPhones.push({
+                    name: name,
+                    carrier: 'skt',
+                    newPrice: cleanPrice(cols[21]),
+                    movePrice: cleanPrice(cols[22])
+                });
+            }
+
+            // KT: U54:U55 (lines[53:54])
+            for (let i = 53; i <= 54; i++) {
+                if (i >= lines.length) break;
+                const cols = parseCSVLine(lines[i]);
+                if (cols.length < 23) continue;
+                const name = cols[20]?.trim();
+                if (!name || name === '') continue;
+                
+                kidsPhones.push({
+                    name: name,
+                    carrier: 'kt',
+                    newPrice: cleanPrice(cols[21]),
+                    movePrice: cleanPrice(cols[22])
+                });
+            }
+
+            // LGU: U58:U60 (lines[57:59])
+            for (let i = 57; i <= 59; i++) {
+                if (i >= lines.length) break;
+                const cols = parseCSVLine(lines[i]);
+                if (cols.length < 23) continue;
+                const name = cols[20]?.trim();
+                if (!name || name === '') continue;
+                
+                kidsPhones.push({
+                    name: name,
+                    carrier: 'lg',
+                    newPrice: cleanPrice(cols[21]),
+                    movePrice: cleanPrice(cols[22])
+                });
+            }
+
+            return { phones: smartphones, kidsPhones: kidsPhones, updateTime: updateTime };
         }
 
         function formatPriceToWon(price) {
@@ -941,6 +1032,7 @@
             currentStep = 1;
             selectedBrand = '';
             selectedPhone = '';
+            selectedKidsPhone = null;
             currentCarrier = '';
             targetCarrier = '';
             document.getElementById('estimateModal').style.display = 'block';
@@ -961,16 +1053,103 @@
             updateProgress();
             document.getElementById('modalBody').innerHTML = `
                 <div class="step-title">원하시는 휴대폰 브랜드를 선택해주세요</div>
-                <div class="option-grid">
+                <div class="option-grid-three">
                     <button class="option-btn galaxy-brand" onclick="selectBrand('갤럭시')">갤럭시</button>
                     <button class="option-btn" onclick="selectBrand('아이폰')">아이폰</button>
+                    <button class="option-btn" onclick="selectBrand('키즈폰/효도폰')">키즈폰/효도폰</button>
                 </div>
             `;
         }
 
         function selectBrand(brand) {
             selectedBrand = brand;
-            showStep2();
+            if (brand === '키즈폰/효도폰') {
+                showKidsPhoneStep2();
+            } else {
+                showStep2();
+            }
+        }
+
+        function showKidsPhoneStep2() {
+            currentStep = 2;
+            updateProgress();
+
+            let phoneListHTML = kidsPhoneData.map(phone => {
+                const carrierText = phone.carrier === 'skt' ? 'SKT' : phone.carrier === 'kt' ? 'KT' : 'LG U+';
+                return `<div class="phone-item" onclick="selectKidsPhone('${phone.name}', '${phone.carrier}')">
+                    ${phone.name} <span class="phone-carrier-skt">(${carrierText})</span>
+                </div>`;
+            }).join('');
+
+            phoneListHTML += `<div class="phone-item contact-item" onclick="window.open('http://pf.kakao.com/_Ypsen/chat', '_blank')">
+                기기변경은 문의하기
+            </div>`;
+
+            document.getElementById('modalBody').innerHTML = `
+                <div class="step-title">기종을 선택해주세요</div>
+                <div class="phone-list">
+                    ${phoneListHTML}
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-back" onclick="showStep1()">이전</button>
+                </div>
+            `;
+        }
+
+        function selectKidsPhone(name, carrier) {
+            const phone = kidsPhoneData.find(p => p.name === name && p.carrier === carrier);
+            selectedKidsPhone = phone;
+            showKidsPhoneResult();
+        }
+
+        function showKidsPhoneResult() {
+            currentStep = 5;
+            updateProgress();
+
+            const phone = selectedKidsPhone;
+            const carrierName = phone.carrier === 'skt' ? 'SKT' : phone.carrier === 'kt' ? 'KT' : 'LG U+';
+            const carrierClass = phone.carrier;
+
+            const newPrice = formatPriceToWon(phone.newPrice);
+            const movePrice = formatPriceToWon(phone.movePrice);
+
+            document.getElementById('modalBody').innerHTML = `
+                <div class="result-card">
+                    <div class="result-header">
+                        <div class="result-phone-name">${phone.name}</div>
+                        <div class="result-badges">
+                            <span class="result-carrier-badge ${carrierClass}">${carrierName}</span>
+                        </div>
+                    </div>
+                    <div class="result-details" style="padding-top: 20px;">
+                        <div class="result-detail-item">
+                            <span class="result-detail-label">신규</span>
+                            <span class="result-detail-value">${newPrice}</span>
+                        </div>
+                        <div class="result-detail-item">
+                            <span class="result-detail-label">번호이동</span>
+                            <span class="result-detail-value">${movePrice}</span>
+                        </div>
+                        <div class="result-detail-item">
+                            <span class="result-detail-label">기기변경</span>
+                            <span class="result-detail-value">문의 필요</span>
+                        </div>
+                    </div>
+                    <a href="http://pf.kakao.com/_Ypsen/chat" target="_blank" class="result-consult-btn">
+                        <span>낮은 요금제 · 맞춤 견적</span>
+                        <span>카톡 문의하기</span>
+                    </a>
+                    <div class="result-note">
+                        <div class="result-note-item">✓ 말장난 및 카드발급 조건 없는 투명한 가격입니다!</div>
+                        <div class="result-note-item">✓ 선택약정 견적은 카톡 문의하기 부탁드립니다!</div>
+                        <div class="result-note-item">✓ 실시간으로 휴대폰 가격이 변동되니 꼭 참고 부탁드립니다!</div>
+                    </div>
+                </div>
+                <div class="btn-group" style="margin-top: 15px;">
+                    <button class="btn btn-back" onclick="startEstimate()">다시 계산하기</button>
+                    <button class="btn btn-next" onclick="closeModal()">닫기</button>
+                </div>
+            `;
         }
 
         function showStep2() {
