@@ -960,7 +960,9 @@
                 if (cols.length < 23) continue;
                 
                 const name = cols[20]?.trim();  // U열
-                if (!name || name === '') continue;
+                
+                // 헤더나 빈 값 제외
+                if (!name || name === '' || name === '키즈폰' || name === '모델명' || name === 'SKT' || name === 'KT' || name === 'KT 3T' || name === 'LG U+') continue;
                 
                 kidsPhones.push({
                     name: name,
