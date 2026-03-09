@@ -16,7 +16,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #ffffff;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -32,15 +32,15 @@
         .logo {
             font-size: 3.5em;
             font-weight: 700;
-            color: #fff;
+            color: #667eea;
             margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
             word-break: keep-all;
         }
 
         .subtitle {
             font-size: 1.2em;
-            color: rgba(255, 255, 255, 0.9);
+            color: #333;
             margin-bottom: 15px;
             font-weight: 500;
             word-break: keep-all;
@@ -48,15 +48,15 @@
 
         .promo-text {
             font-size: 1.1em;
-            color: rgba(255, 255, 255, 0.85);
+            color: #666;
             margin-bottom: 30px;
             line-height: 1.6;
             word-break: keep-all;
         }
 
         .estimate-btn {
-            background: #fff;
-            color: #667eea;
+            background: #667eea;
+            color: #fff;
             border: none;
             padding: 18px 60px;
             font-size: 1.2em;
@@ -76,7 +76,7 @@
 
         .update-time {
             font-size: 0.85em;
-            color: rgba(255, 255, 255, 0.7);
+            color: #999;
             margin-bottom: 30px;
             font-weight: 400;
             word-break: keep-all;
@@ -84,18 +84,18 @@
 
         .additional-info {
             margin-top: 40px;
-            background: rgba(255, 255, 255, 0.1);
+            background: #f8f9fa;
             padding: 25px;
             border-radius: 20px;
-            backdrop-filter: blur(10px);
             max-width: 400px;
             margin-left: auto;
             margin-right: auto;
+            border: 1px solid #e9ecef;
         }
 
         .additional-info-title {
             font-size: 1.2em;
-            color: #fff;
+            color: #333;
             margin-bottom: 10px;
             font-weight: 600;
             word-break: keep-all;
@@ -103,15 +103,15 @@
 
         .additional-info-desc {
             font-size: 1em;
-            color: rgba(255, 255, 255, 0.9);
+            color: #666;
             margin-bottom: 15px;
             line-height: 1.5;
             word-break: keep-all;
         }
 
         .consult-btn {
-            background: #fff;
-            color: #667eea;
+            background: #667eea;
+            color: #fff;
             border: none;
             padding: 14px 40px;
             font-size: 1em;
@@ -143,7 +143,7 @@
         }
 
         .modal-content {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #ffffff;
             margin: auto;
             padding: 30px;
             border-radius: 20px;
@@ -158,7 +158,7 @@
         }
 
         .close-modal {
-            color: #fff;
+            color: #333;
             float: right;
             font-size: 32px;
             font-weight: bold;
@@ -168,14 +168,14 @@
         }
 
         .close-modal:hover {
-            color: #ddd;
+            color: #667eea;
             transform: scale(1.1);
         }
 
         .progress-bar {
             width: 100%;
             height: 6px;
-            background: rgba(255,255,255,0.3);
+            background: #e9ecef;
             border-radius: 3px;
             margin: 20px 0;
             overflow: hidden;
@@ -183,13 +183,13 @@
 
         .progress-fill {
             height: 100%;
-            background: #fff;
+            background: #667eea;
             border-radius: 3px;
             transition: width 0.3s ease;
         }
 
         .step-title {
-            color: #fff;
+            color: #333;
             font-size: 1.4em;
             font-weight: 600;
             margin-bottom: 25px;
@@ -205,7 +205,7 @@
 
         .option-btn {
             background: #fff;
-            border: none;
+            border: 2px solid #e9ecef;
             padding: 20px;
             border-radius: 12px;
             font-size: 1.1em;
@@ -214,23 +214,28 @@
             transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             word-break: keep-all;
+            color: #333;
         }
 
         .option-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            border-color: #667eea;
         }
 
         .option-btn.skt-color {
             color: #9b59b6 !important;
+            border-color: #9b59b6 !important;
         }
 
         .option-btn.kt-color {
             color: #000 !important;
+            border-color: #000 !important;
         }
 
         .option-btn.lg-color {
             color: #e91e63 !important;
+            border-color: #e91e63 !important;
         }
 
         .phone-list {
@@ -249,11 +254,14 @@
             font-weight: 500;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             word-break: keep-all;
+            border: 2px solid #e9ecef;
+            color: #333;
         }
 
         .phone-item:hover {
             transform: translateX(5px);
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            border-color: #667eea;
         }
 
         .btn-group {
@@ -275,13 +283,14 @@
         }
 
         .btn-back {
-            background: rgba(255,255,255,0.9);
+            background: #f8f9fa;
             color: #667eea;
+            border: 2px solid #e9ecef;
         }
 
         .btn-next {
-            background: #fff;
-            color: #667eea;
+            background: #667eea;
+            color: #fff;
         }
 
         .btn:hover {
@@ -451,7 +460,7 @@
         .out-of-stock-section {
             text-align: center;
             padding: 30px 20px;
-            color: #fff;
+            color: #333;
         }
 
         .out-of-stock-icon {
@@ -472,6 +481,7 @@
             margin-bottom: 25px;
             line-height: 1.6;
             word-break: keep-all;
+            color: #666;
         }
 
         .strikethrough {
@@ -829,7 +839,6 @@
             const smartphones = [];
             let updateTime = '불러오는 중...';
 
-            // V5 셀에서 업데이트 시간 읽기 (5번째 줄, 21번째 컬럼)
             if (lines.length > 4) {
                 const row5 = parseCSVLine(lines[4]);
                 if (row5.length > 21 && row5[21]) {
@@ -837,15 +846,15 @@
                 }
             }
 
-            for (let i = 8; i < lines.length; i++) {
+            for (let i = 8; i < 43; i++) {
+                if (i >= lines.length) break;
+                
                 const cols = parseCSVLine(lines[i]);
                 
                 if (cols.length < 27) continue;
                 
                 const name = cols[20]?.trim();
-                if (!name || name === '' || name.toLowerCase().includes('날짜') || name.includes('부가조건') || name.includes('키즈') || name.includes('효도') || name.includes('공시') || name.includes('선약')) {
-                    continue;
-                }
+                if (!name || name === '') continue;
 
                 const retailPrice = cols[2]?.trim() || '0';
 
@@ -943,13 +952,10 @@
             
             let filteredPhones = [];
             if (selectedBrand === '갤럭시') {
-                // 갤럭시 = 아이폰이 아닌 모든 제품
                 filteredPhones = phoneData.filter(p => !p.name.includes('아이폰'));
             } else if (selectedBrand === '아이폰') {
                 filteredPhones = phoneData.filter(p => p.name.includes('아이폰'));
             }
-
-            console.log('📱 필터링된 제품:', filteredPhones.length, '개');
 
             let phoneListHTML = filteredPhones.map(phone => 
                 `<div class="phone-item" onclick="selectPhone('${phone.name}')">${phone.name}</div>`
