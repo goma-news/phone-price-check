@@ -447,6 +447,10 @@
             color: #333;
         }
 
+        .result-final-price.negative-price {
+            color: #ff0000 !important;
+        }
+
         .result-original-price {
             font-size: 0.95em;
             text-decoration: line-through;
@@ -483,6 +487,14 @@
             text-align: right;
             font-size: 1em;
             word-break: keep-all;
+        }
+
+        .result-detail-value.negative-price {
+            color: #ff0000 !important;
+        }
+
+        .pink-text {
+            color: #e91e63 !important;
         }
 
         .result-consult-btn {
@@ -1027,6 +1039,13 @@
             return won.toLocaleString() + '원';
         }
 
+        function isNegativePrice(price) {
+            if (price === '-' || !price) return false;
+            const num = parseFloat(price);
+            if (isNaN(num)) return false;
+            return num < 0;
+        }
+
         function formatRetailPrice(price) {
             const num = parseInt(price);
             if (isNaN(num) || num === 0) return '';
@@ -1147,6 +1166,9 @@
 
             const newPrice = formatPriceToWon(phone.newPrice);
             const movePrice = formatPriceToWon(phone.movePrice);
+            
+            const isNewNegative = isNegativePrice(phone.newPrice);
+            const isMoveNegative = isNegativePrice(phone.movePrice);
 
             // 통신사별 부가서비스
             const service = additionalServices[phone.carrierCode];
@@ -1155,20 +1177,20 @@
                 <div class="result-card">
                     <div class="result-header">
                         <div class="result-phone-name">${phone.name}</div>
-                        <div class="result-plan-info">3만원 요금제 (6개월 유지)</div>
+                        <div class="result-plan-info">3만원 요금제 <span class="pink-text">(6개월 유지)</span></div>
                     </div>
                     <div class="result-details">
                         <div class="result-detail-item">
                             <span class="result-detail-label">통신사 신규 가입 시, 기기 값</span>
-                            <span class="result-detail-value">${newPrice}</span>
+                            <span class="result-detail-value ${isNewNegative ? 'negative-price' : ''}">${newPrice}</span>
                         </div>
                         <div class="result-detail-item">
                             <span class="result-detail-label">타 통신사에서 이동 시, 기기 값</span>
-                            <span class="result-detail-value">${movePrice}</span>
+                            <span class="result-detail-value ${isMoveNegative ? 'negative-price' : ''}">${movePrice}</span>
                         </div>
                         <div class="result-detail-item">
                             <span class="result-detail-label">부가서비스</span>
-                            <span class="result-detail-value">${service.name}<br><small style="font-size:0.85em;opacity:0.8;">(${service.price})</small><br><small style="font-size:0.75em;opacity:0.7;">(${service.cancellation})</small></span>
+                            <span class="result-detail-value">${service.name}<br><small style="font-size:0.85em;opacity:0.8;">(${service.price})</small><br><small class="pink-text" style="font-size:0.75em;">(${service.cancellation})</small></span>
                         </div>
                     </div>
                     <a href="http://pf.kakao.com/_Ypsen/chat" target="_blank" class="result-consult-btn">
@@ -1269,6 +1291,8 @@
 
             const carrierClass = targetCarrier === 'skt' ? 'skt' : targetCarrier === 'kt' ? 'kt' : 'lg';
             const carrierName = targetCarrier === 'skt' ? 'SKT' : targetCarrier === 'kt' ? 'KT' : 'LG U+';
+            
+            const isPriceNegative = isNegativePrice(price);
 
             document.getElementById('modalBody').innerHTML = `
                 <div class="result-card">
@@ -1281,17 +1305,17 @@
                     </div>
                     <div class="result-price-section">
                         ${discountPercent > 0 ? `<div class="result-discount-label">최대 ${discountPercent}% 할인</div>` : ''}
-                        <div class="result-final-price">${formattedPrice}</div>
+                        <div class="result-final-price ${isPriceNegative ? 'negative-price' : ''}">${formattedPrice}</div>
                         ${retailPrice ? `<div class="result-original-price">${retailPrice}</div>` : ''}
                     </div>
                     <div class="result-details">
                         <div class="result-detail-item">
                             <span class="result-detail-label">요금제</span>
-                            <span class="result-detail-value">${plan.name}<br><small style="font-size:0.85em;opacity:0.8;">(${plan.duration})</small><br><small style="font-size:0.75em;opacity:0.7;">(6개월 후에 요금제 변경 가능)</small></span>
+                            <span class="result-detail-value">${plan.name}<br><small class="pink-text" style="font-size:0.85em;">(${plan.duration})</small><br><small class="pink-text" style="font-size:0.75em;">(6개월 후에 요금제 변경 가능)</small></span>
                         </div>
                         <div class="result-detail-item">
                             <span class="result-detail-label">부가서비스</span>
-                            <span class="result-detail-value">${service.name}<br><small style="font-size:0.85em;opacity:0.8;">(${service.price})</small><br><small style="font-size:0.75em;opacity:0.7;">(${service.cancellation})</small></span>
+                            <span class="result-detail-value">${service.name}<br><small style="font-size:0.85em;opacity:0.8;">(${service.price})</small><br><small class="pink-text" style="font-size:0.75em;">(${service.cancellation})</small></span>
                         </div>
                     </div>
                     <a href="http://pf.kakao.com/_Ypsen/chat" target="_blank" class="result-consult-btn">
