@@ -959,7 +959,7 @@
                 const cols = parseCSVLine(lines[i]);
                 if (cols.length < 23) continue;
                 const name = cols[20]?.trim();
-                if (!name) continue;
+                if (!name || name === '' || name === '모델명' || name === '키즈폰') continue;
                 kidsPhones.push({
                     name: name,
                     carrier: 'SKT 통신사',
@@ -975,7 +975,7 @@
                 const cols = parseCSVLine(lines[i]);
                 if (cols.length < 23) continue;
                 const name = cols[20]?.trim();
-                if (!name) continue;
+                if (!name || name === '' || name === '모델명' || name === '키즈폰') continue;
                 kidsPhones.push({
                     name: name,
                     carrier: 'KT 통신사',
@@ -991,7 +991,7 @@
                 const cols = parseCSVLine(lines[i]);
                 if (cols.length < 23) continue;
                 const name = cols[20]?.trim();
-                if (!name) continue;
+                if (!name || name === '' || name === '모델명' || name === '키즈폰') continue;
                 kidsPhones.push({
                     name: name,
                     carrier: 'LGU+ 통신사',
