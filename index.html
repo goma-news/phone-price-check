@@ -357,30 +357,32 @@
         .result-price-section {
             padding: 25px 20px;
             text-align: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
+            background: #ffffff;
+            border-bottom: 1px solid #f0f0f0;
         }
 
         .result-discount-label {
-            font-size: 1.1em;
+            font-size: 1.2em;
             margin-bottom: 10px;
-            opacity: 0.95;
-            font-weight: 500;
+            font-weight: 700;
+            color: #333;
             word-break: keep-all;
         }
 
         .result-final-price {
-            font-size: 2em;
+            font-size: 2.2em;
             font-weight: 700;
             margin-bottom: 8px;
             word-break: keep-all;
+            color: #333;
         }
 
         .result-original-price {
             font-size: 0.95em;
             text-decoration: line-through;
-            opacity: 0.8;
             word-break: keep-all;
+            color: #ff0000;
+            font-weight: 500;
         }
 
         .result-details {
@@ -444,9 +446,10 @@
             margin: 15px 20px 20px;
             border-radius: 10px;
             font-size: 0.85em;
-            color: #666;
+            color: #333;
             line-height: 1.8;
             word-break: keep-all;
+            font-weight: 500;
         }
 
         .result-note-item {
@@ -626,7 +629,7 @@
             }
 
             .result-final-price {
-                font-size: 1.7em;
+                font-size: 1.8em;
             }
 
             .result-original-price {
@@ -767,9 +770,9 @@
         };
 
         const additionalServices = {
-            skt: { name: '우주패스', price: '9,900원' },
-            kt: { name: '필수팩 지니/밀리', price: '9,900원' },
-            lg: { name: 'V컬러링 음악감상', price: '8,800원' }
+            skt: { name: '우주패스', price: '9,900원', cancellation: '1개월 후에 해지 가능' },
+            kt: { name: '필수팩 지니/밀리', price: '9,900원', cancellation: '3개월 후에 해지 가능' },
+            lg: { name: 'V컬러링 음악감상', price: '8,800원', cancellation: '3개월 후에 해지 가능' }
         };
 
         async function loadData() {
@@ -1082,7 +1085,7 @@
                         </div>
                         <div class="result-detail-item">
                             <span class="result-detail-label">부가 서비스</span>
-                            <span class="result-detail-value">${service.name}<br><small style="font-size:0.85em;opacity:0.8;">(${service.price})</small></span>
+                            <span class="result-detail-value">${service.name}<br><small style="font-size:0.85em;opacity:0.8;">(${service.price})</small><br><small style="font-size:0.75em;opacity:0.7;">(${service.cancellation})</small></span>
                         </div>
                     </div>
                     <a href="http://pf.kakao.com/_Ypsen/chat" target="_blank" class="result-consult-btn">
