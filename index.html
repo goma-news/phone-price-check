@@ -293,6 +293,16 @@
             font-weight: 700;
         }
 
+        .carrier-kt {
+            color: #000000 !important;
+            font-weight: 700;
+        }
+
+        .carrier-lg {
+            color: #e91e63 !important;
+            font-weight: 700;
+        }
+
         .kids-contact-btn {
             width: 100%;
             padding: 15px;
@@ -943,7 +953,7 @@
             const lines = csvText.split('\n');
             const kidsPhones = [];
 
-            // SKT (U51:U52 → lines[50], lines[51])
+            // SKT (U51, U52)
             for (let i = 50; i <= 51; i++) {
                 if (i >= lines.length) break;
                 const cols = parseCSVLine(lines[i]);
@@ -952,13 +962,14 @@
                 if (!name) continue;
                 kidsPhones.push({
                     name: name,
-                    carrier: 'SKT',
+                    carrier: 'SKT 통신사',
+                    carrierClass: 'carrier-skt',
                     newPrice: cleanPrice(cols[21]),
                     movePrice: cleanPrice(cols[22])
                 });
             }
 
-            // KT (U54:U55 → lines[53], lines[54])
+            // KT (U54, U55)
             for (let i = 53; i <= 54; i++) {
                 if (i >= lines.length) break;
                 const cols = parseCSVLine(lines[i]);
@@ -967,13 +978,14 @@
                 if (!name) continue;
                 kidsPhones.push({
                     name: name,
-                    carrier: 'KT',
+                    carrier: 'KT 통신사',
+                    carrierClass: 'carrier-kt',
                     newPrice: cleanPrice(cols[21]),
                     movePrice: cleanPrice(cols[22])
                 });
             }
 
-            // LGU (U58:U60 → lines[57], lines[58], lines[59])
+            // LGU (U58, U59, U60)
             for (let i = 57; i <= 59; i++) {
                 if (i >= lines.length) break;
                 const cols = parseCSVLine(lines[i]);
@@ -982,7 +994,8 @@
                 if (!name) continue;
                 kidsPhones.push({
                     name: name,
-                    carrier: 'LG',
+                    carrier: 'LGU+ 통신사',
+                    carrierClass: 'carrier-lg',
                     newPrice: cleanPrice(cols[21]),
                     movePrice: cleanPrice(cols[22])
                 });
@@ -1060,14 +1073,13 @@
         function showStep2() {
             currentStep = 2;
             updateProgress();
-
+            
             let phoneListHTML = '';
 
             if (selectedBrand === '키즈폰/효도폰') {
                 phoneListHTML = kidsPhoneData.map(phone => {
-                    const carrierClass = phone.carrier === 'SKT' ? 'carrier-skt' : '';
                     return `<div class="phone-item" onclick="selectKidsPhone('${phone.name}', '${phone.carrier}')">
-                        ${phone.name} <span class="${carrierClass}">(${phone.carrier})</span>
+                        ${phone.name} <span class="${phone.carrierClass}">(${phone.carrier})</span>
                     </div>`;
                 }).join('');
                 phoneListHTML += `<a href="http://pf.kakao.com/_Ypsen/chat" class="kids-contact-btn">기기변경은 문의하기</a>`;
@@ -1132,14 +1144,22 @@
             const newPrice = formatPriceToWon(phone.newPrice);
             const movePrice = formatPriceToWon(phone.movePrice);
 
-            const carrierClass = phone.carrier === 'SKT' ? 'skt' : phone.carrier === 'KT' ? 'kt' : 'lg';
+            let carrierBadgeClass = 'skt';
+            let carrierName = 'SKT';
+            if (phone.carrier.includes('KT')) {
+                carrierBadgeClass = 'kt';
+                carrierName = 'KT';
+            } else if (phone.carrier.includes('LGU')) {
+                carrierBadgeClass = 'lg';
+                carrierName = 'LGU+';
+            }
 
             document.getElementById('modalBody').innerHTML = `
                 <div class="result-card">
                     <div class="result-header">
                         <div class="result-phone-name">${phone.name}</div>
                         <div class="result-badges">
-                            <span class="result-carrier-badge ${carrierClass}">${phone.carrier}</span>
+                            <span class="result-carrier-badge ${carrierBadgeClass}">${carrierName}</span>
                         </div>
                     </div>
                     <div class="result-details">
