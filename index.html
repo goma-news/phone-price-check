@@ -953,7 +953,7 @@
             const lines = csvText.split('\n');
             const kidsPhones = [];
 
-            // SKT (U51, U52)
+            // SKT U51, U52 (lines[50], lines[51])
             for (let i = 50; i <= 51; i++) {
                 if (i >= lines.length) break;
                 const cols = parseCSVLine(lines[i]);
@@ -969,7 +969,7 @@
                 });
             }
 
-            // KT (U54, U55)
+            // KT U54, U55 (lines[53], lines[54])
             for (let i = 53; i <= 54; i++) {
                 if (i >= lines.length) break;
                 const cols = parseCSVLine(lines[i]);
@@ -985,7 +985,7 @@
                 });
             }
 
-            // LGU (U58, U59, U60)
+            // LGU U58, U59, U60 (lines[57], lines[58], lines[59])
             for (let i = 57; i <= 59; i++) {
                 if (i >= lines.length) break;
                 const cols = parseCSVLine(lines[i]);
