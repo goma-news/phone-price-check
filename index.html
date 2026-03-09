@@ -82,6 +82,78 @@
             word-break: keep-all;
         }
 
+        .best-deals {
+            margin-top: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 25px;
+            border-radius: 20px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .best-deals-title {
+            font-size: 1.4em;
+            color: #fff;
+            margin-bottom: 20px;
+            font-weight: 700;
+            word-break: keep-all;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .best-deal-item {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            text-align: left;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .best-deal-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .best-deal-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .best-deal-rank {
+            display: inline-block;
+            background: #667eea;
+            color: #fff;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            font-weight: 700;
+            font-size: 0.9em;
+            margin-right: 10px;
+        }
+
+        .best-deal-carrier {
+            color: #9b59b6;
+            font-weight: 700;
+            font-size: 0.95em;
+        }
+
+        .best-deal-model {
+            color: #333;
+            font-weight: 600;
+            font-size: 1em;
+            margin: 5px 0;
+        }
+
+        .best-deal-price {
+            color: #ff0000;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
         .additional-info {
             margin-top: 40px;
             background: #f8f9fa;
@@ -612,6 +684,19 @@
                 font-size: 0.75em;
             }
 
+            .best-deals {
+                padding: 25px 20px;
+                max-width: 90%;
+            }
+
+            .best-deals-title {
+                font-size: 1.2em;
+            }
+
+            .best-deal-item {
+                padding: 12px 15px;
+            }
+
             .additional-info {
                 padding: 20px;
                 max-width: 90%;
@@ -820,6 +905,22 @@
         <p class="promo-text">카드 발급 및 복잡한 절차 없이<br>간편하게 확인하세요</p>
         <button class="estimate-btn" onclick="startEstimate()">견적 확인하기</button>
         <p class="update-time" id="updateTime">최신 업데이트: 불러오는 중...</p>
+        
+        <!-- 오늘의 특가폰 -->
+        <div class="best-deals" id="bestDeals">
+            <div class="best-deals-title">🔥 오늘의 특가 폰</div>
+            <div id="bestDealsList">
+                <div class="best-deal-item">
+                    <span class="best-deal-rank">1</span>
+                    <div style="display: inline-block; vertical-align: middle;">
+                        <div class="best-deal-carrier">불러오는 중...</div>
+                        <div class="best-deal-model">데이터 로딩 중...</div>
+                        <div class="best-deal-price">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="additional-info">
             <div class="additional-info-title">인터넷 + TV</div>
             <div class="additional-info-desc">사은품 30~최대 100만원 지급</div>
@@ -873,6 +974,9 @@
                 
                 document.getElementById('updateTime').textContent = `최신 업데이트: ${updateTimeText}`;
                 
+                // 특가폰 표시
+                displayBestDeals();
+                
                 console.log('✅ 데이터 로드 완료:', phoneData.length, '개 제품');
                 console.log('✅ 키즈폰 데이터:', kidsPhoneData.length, '개 제품');
                 console.log('✅ 업데이트 시간:', updateTimeText);
@@ -880,6 +984,58 @@
                 console.error('❌ 데이터 로드 실패:', error);
                 alert('데이터를 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요.');
             }
+        }
+
+        function displayBestDeals() {
+            const allDeals = [];
+            
+            // 모든 통신사 & 번호이동/기기변경 가격 수집
+            phoneData.forEach(phone => {
+                ['skt', 'kt', 'lg'].forEach(carrier => {
+                    ['move', 'change'].forEach(type => {
+                        const price = phone[carrier][type];
+                        if (price !== '-') {
+                            const numPrice = parseFloat(price);
+                            if (!isNaN(numPrice) && numPrice !== 0) {
+                                allDeals.push({
+                                    phone: phone.name,
+                                    carrier: carrier === 'skt' ? 'SKT' : carrier === 'kt' ? 'KT' : 'LGU+',
+                                    price: numPrice,
+                                    type: type === 'move' ? '번호이동' : '기기변경'
+                                });
+                            }
+                        }
+                    });
+                });
+            });
+            
+            // 가격 오름차순 정렬
+            allDeals.sort((a, b) => a.price - b.price);
+            
+            // 상위 3개 추출
+            const top3 = allDeals.slice(0, 3);
+            
+            // HTML 생성
+            let html = '';
+            top3.forEach((deal, index) => {
+                const won = Math.round(deal.price * 10000);
+                const priceText = won < 0 
+                    ? '-' + Math.abs(won).toLocaleString() + '원'
+                    : won.toLocaleString() + '원';
+                    
+                html += `
+                    <div class="best-deal-item">
+                        <span class="best-deal-rank">${index + 1}</span>
+                        <div style="display: inline-block; vertical-align: middle;">
+                            <div class="best-deal-carrier">${deal.carrier} (${deal.type})</div>
+                            <div class="best-deal-model">${deal.phone}</div>
+                            <div class="best-deal-price">${priceText}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('bestDealsList').innerHTML = html;
         }
 
         function parseCSVLine(line) {
@@ -977,18 +1133,15 @@
             const lines = csvText.split('\n');
             const kidsPhones = [];
 
-            // U51:U60 (lines[50]~lines[59])
             for (let i = 50; i <= 59; i++) {
                 if (i >= lines.length) break;
                 const cols = parseCSVLine(lines[i]);
                 if (cols.length < 23) continue;
                 
-                const name = cols[20]?.trim();  // U열
+                const name = cols[20]?.trim();
                 
-                // 헤더나 빈 값 제외
                 if (!name || name === '' || name === '키즈폰' || name === '모델명' || name === 'SKT' || name === 'KT' || name === 'KT 3T' || name === 'LG U+') continue;
                 
-                // 통신사 판별
                 let carrier = '';
                 let carrierClass = '';
                 let carrierCode = '';
@@ -1012,8 +1165,8 @@
                     carrierClass: carrierClass,
                     carrierCode: carrierCode,
                     rowIndex: i,
-                    newPrice: cleanPrice(cols[21]),   // V열
-                    movePrice: cleanPrice(cols[22])   // W열
+                    newPrice: cleanPrice(cols[21]),
+                    movePrice: cleanPrice(cols[22])
                 });
             }
 
@@ -1170,7 +1323,6 @@
             const isNewNegative = isNegativePrice(phone.newPrice);
             const isMoveNegative = isNegativePrice(phone.movePrice);
 
-            // 통신사별 부가서비스
             const service = additionalServices[phone.carrierCode];
 
             document.getElementById('modalBody').innerHTML = `
