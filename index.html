@@ -850,7 +850,7 @@
                 document.getElementById('updateTime').textContent = `최신 업데이트: ${updateTimeText}`;
                 
                 console.log('✅ 데이터 로드 완료:', phoneData.length, '개 제품');
-                console.log('✅ 키즈폰 데이터:', kidsPhoneData.length, '개 제품');
+                console.log('✅ 키즈폰 데이터:', kidsPhoneData);
                 console.log('✅ 업데이트 시간:', updateTimeText);
             } catch (error) {
                 console.error('❌ 데이터 로드 실패:', error);
@@ -953,13 +953,13 @@
             const lines = csvText.split('\n');
             const kidsPhones = [];
 
-            // SKT U51, U52 (lines[50], lines[51])
+            // SKT 51행, 52행 (lines[50], lines[51])
             for (let i = 50; i <= 51; i++) {
                 if (i >= lines.length) break;
                 const cols = parseCSVLine(lines[i]);
                 if (cols.length < 23) continue;
                 const name = cols[20]?.trim();
-                if (!name || name === '' || name === '모델명' || name === '키즈폰') continue;
+                if (!name || name === '' || name === 'SKT' || name === 'KT' || name === 'LGU') continue;
                 kidsPhones.push({
                     name: name,
                     carrier: 'SKT 통신사',
@@ -969,13 +969,13 @@
                 });
             }
 
-            // KT U54, U55 (lines[53], lines[54])
+            // KT 54행, 55행 (lines[53], lines[54])
             for (let i = 53; i <= 54; i++) {
                 if (i >= lines.length) break;
                 const cols = parseCSVLine(lines[i]);
                 if (cols.length < 23) continue;
                 const name = cols[20]?.trim();
-                if (!name || name === '' || name === '모델명' || name === '키즈폰') continue;
+                if (!name || name === '' || name === 'SKT' || name === 'KT' || name === 'LGU') continue;
                 kidsPhones.push({
                     name: name,
                     carrier: 'KT 통신사',
@@ -985,13 +985,13 @@
                 });
             }
 
-            // LGU U58, U59, U60 (lines[57], lines[58], lines[59])
+            // LGU 58행, 59행, 60행 (lines[57], lines[58], lines[59])
             for (let i = 57; i <= 59; i++) {
                 if (i >= lines.length) break;
                 const cols = parseCSVLine(lines[i]);
                 if (cols.length < 23) continue;
                 const name = cols[20]?.trim();
-                if (!name || name === '' || name === '모델명' || name === '키즈폰') continue;
+                if (!name || name === '' || name === 'SKT' || name === 'KT' || name === 'LGU') continue;
                 kidsPhones.push({
                     name: name,
                     carrier: 'LGU+ 통신사',
