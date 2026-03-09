@@ -850,7 +850,7 @@
                 document.getElementById('updateTime').textContent = `최신 업데이트: ${updateTimeText}`;
                 
                 console.log('✅ 데이터 로드 완료:', phoneData.length, '개 제품');
-                console.log('✅ 키즈폰 데이터:', kidsPhoneData);
+                console.log('✅ 키즈폰 데이터:', kidsPhoneData.length, '개 제품');
                 console.log('✅ 업데이트 시간:', updateTimeText);
             } catch (error) {
                 console.error('❌ 데이터 로드 실패:', error);
@@ -953,51 +953,20 @@
             const lines = csvText.split('\n');
             const kidsPhones = [];
 
-            // SKT 51행, 52행 (lines[50], lines[51])
-            for (let i = 50; i <= 51; i++) {
+            // U51:U60 (lines[50]~lines[59])
+            for (let i = 50; i <= 59; i++) {
                 if (i >= lines.length) break;
                 const cols = parseCSVLine(lines[i]);
                 if (cols.length < 23) continue;
-                const name = cols[20]?.trim();
-                if (!name || name === '' || name === 'SKT' || name === 'KT' || name === 'LGU') continue;
+                
+                const name = cols[20]?.trim();  // U열
+                if (!name || name === '') continue;
+                
                 kidsPhones.push({
                     name: name,
-                    carrier: 'SKT 통신사',
-                    carrierClass: 'carrier-skt',
-                    newPrice: cleanPrice(cols[21]),
-                    movePrice: cleanPrice(cols[22])
-                });
-            }
-
-            // KT 54행, 55행 (lines[53], lines[54])
-            for (let i = 53; i <= 54; i++) {
-                if (i >= lines.length) break;
-                const cols = parseCSVLine(lines[i]);
-                if (cols.length < 23) continue;
-                const name = cols[20]?.trim();
-                if (!name || name === '' || name === 'SKT' || name === 'KT' || name === 'LGU') continue;
-                kidsPhones.push({
-                    name: name,
-                    carrier: 'KT 통신사',
-                    carrierClass: 'carrier-kt',
-                    newPrice: cleanPrice(cols[21]),
-                    movePrice: cleanPrice(cols[22])
-                });
-            }
-
-            // LGU 58행, 59행, 60행 (lines[57], lines[58], lines[59])
-            for (let i = 57; i <= 59; i++) {
-                if (i >= lines.length) break;
-                const cols = parseCSVLine(lines[i]);
-                if (cols.length < 23) continue;
-                const name = cols[20]?.trim();
-                if (!name || name === '' || name === 'SKT' || name === 'KT' || name === 'LGU') continue;
-                kidsPhones.push({
-                    name: name,
-                    carrier: 'LGU+ 통신사',
-                    carrierClass: 'carrier-lg',
-                    newPrice: cleanPrice(cols[21]),
-                    movePrice: cleanPrice(cols[22])
+                    rowIndex: i,
+                    newPrice: cleanPrice(cols[21]),   // V열
+                    movePrice: cleanPrice(cols[22])   // W열
                 });
             }
 
@@ -1078,8 +1047,8 @@
 
             if (selectedBrand === '키즈폰/효도폰') {
                 phoneListHTML = kidsPhoneData.map(phone => {
-                    return `<div class="phone-item" onclick="selectKidsPhone('${phone.name}', '${phone.carrier}')">
-                        ${phone.name} <span class="${phone.carrierClass}">(${phone.carrier})</span>
+                    return `<div class="phone-item" onclick="selectKidsPhone('${phone.name}')">
+                        ${phone.name}
                     </div>`;
                 }).join('');
                 phoneListHTML += `<a href="http://pf.kakao.com/_Ypsen/chat" class="kids-contact-btn">기기변경은 문의하기</a>`;
@@ -1131,8 +1100,8 @@
             showStep3();
         }
 
-        function selectKidsPhone(phoneName, carrier) {
-            const phone = kidsPhoneData.find(p => p.name === phoneName && p.carrier === carrier);
+        function selectKidsPhone(phoneName) {
+            const phone = kidsPhoneData.find(p => p.name === phoneName);
             if (!phone) return;
             showKidsResult(phone);
         }
@@ -1144,23 +1113,10 @@
             const newPrice = formatPriceToWon(phone.newPrice);
             const movePrice = formatPriceToWon(phone.movePrice);
 
-            let carrierBadgeClass = 'skt';
-            let carrierName = 'SKT';
-            if (phone.carrier.includes('KT')) {
-                carrierBadgeClass = 'kt';
-                carrierName = 'KT';
-            } else if (phone.carrier.includes('LGU')) {
-                carrierBadgeClass = 'lg';
-                carrierName = 'LGU+';
-            }
-
             document.getElementById('modalBody').innerHTML = `
                 <div class="result-card">
                     <div class="result-header">
                         <div class="result-phone-name">${phone.name}</div>
-                        <div class="result-badges">
-                            <span class="result-carrier-badge ${carrierBadgeClass}">${carrierName}</span>
-                        </div>
                     </div>
                     <div class="result-details">
                         <div class="result-detail-item">
