@@ -964,8 +964,24 @@
                 // 헤더나 빈 값 제외
                 if (!name || name === '' || name === '키즈폰' || name === '모델명' || name === 'SKT' || name === 'KT' || name === 'KT 3T' || name === 'LG U+') continue;
                 
+                // 통신사 판별
+                let carrier = '';
+                let carrierClass = '';
+                if (name.includes('(SKT)')) {
+                    carrier = 'SKT';
+                    carrierClass = 'carrier-skt';
+                } else if (name.includes('(KT)')) {
+                    carrier = 'KT';
+                    carrierClass = 'carrier-kt';
+                } else if (name.includes('(LG U+)')) {
+                    carrier = 'LG U+';
+                    carrierClass = 'carrier-lg';
+                }
+                
                 kidsPhones.push({
                     name: name,
+                    carrier: carrier,
+                    carrierClass: carrierClass,
                     rowIndex: i,
                     newPrice: cleanPrice(cols[21]),   // V열
                     movePrice: cleanPrice(cols[22])   // W열
@@ -1049,7 +1065,7 @@
 
             if (selectedBrand === '키즈폰/효도폰') {
                 phoneListHTML = kidsPhoneData.map(phone => {
-                    return `<div class="phone-item" onclick="selectKidsPhone('${phone.name}')">
+                    return `<div class="phone-item ${phone.carrierClass}" onclick="selectKidsPhone('${phone.name}')">
                         ${phone.name}
                     </div>`;
                 }).join('');
