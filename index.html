@@ -16,16 +16,17 @@ body{font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic
 .update-time{font-size:.85em;color:#999;margin-bottom:30px}
 .best-deals{margin-top:30px;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);padding:30px 25px;border-radius:20px;max-width:420px;margin-left:auto;margin-right:auto;box-shadow:0 10px 30px rgba(102,126,234,.3)}
 .best-deals-title{color:#fff;font-size:1.5em;font-weight:700;margin-bottom:20px;text-align:center}
-.best-deal-item{background:rgba(255,255,255,.95);padding:15px 20px;border-radius:12px;margin-bottom:12px;text-align:left;transition:.3s;box-shadow:0 4px 15px rgba(0,0,0,.1);display:flex;justify-content:space-between;align-items:center}
+.best-deal-item{background:rgba(255,255,255,.95);padding:15px 20px;border-radius:12px;margin-bottom:12px;text-align:left;transition:.3s;box-shadow:0 4px 15px rgba(0,0,0,.1)}
 .best-deal-item:last-child{margin-bottom:0}
 .best-deal-item:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.15)}
-.best-deal-left{flex:1}
-.best-deal-carrier{font-size:1.1em;font-weight:700;margin-bottom:5px}
+.best-deal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.best-deal-carrier{font-size:1.1em;font-weight:700}
 .best-deal-carrier.skt-carrier{color:#ff0000}
 .best-deal-carrier.kt-carrier{color:#000}
 .best-deal-carrier.lg-carrier{color:#e91e63}
-.best-deal-model{font-size:1em;color:#333;font-weight:600}
-.best-deal-price{font-size:1.2em;font-weight:700;white-space:nowrap}
+.best-deal-type{font-size:0.85em;color:#666;font-weight:600}
+.best-deal-model{font-size:1em;color:#333;font-weight:600;margin-bottom:8px}
+.best-deal-price{font-size:1.2em;font-weight:700;text-align:right}
 .best-deal-price.negative-price{color:#ff0000}
 .best-deal-price:not(.negative-price){color:#667eea}
 .additional-info{margin-top:40px;background:#f8f9fa;padding:25px;border-radius:20px;max-width:400px;margin-left:auto;margin-right:auto;border:1px solid #e9ecef}
@@ -72,7 +73,7 @@ body{font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic
 .result-carrier-badge.lg{background:#fce4ec;color:#e91e63}
 .result-type-badge{background:#e3f2fd;color:#2196f3;padding:6px 12px;border-radius:20px;font-size:0.85em;font-weight:600}
 .result-price-section{text-align:center;padding:25px 20px;background:#fff;border-bottom:1px solid #f0f0f0}
-.result-discount-label{font-size:1em;color:#667eea;font-weight:600;margin-bottom:10px}
+.result-discount-label{font-size:1em;color:#ff0000;font-weight:600;margin-bottom:10px}
 .result-final-price{font-size:2.2em;font-weight:700;color:#333;margin:10px 0}
 .result-final-price.negative-price{color:#ff0000 !important}
 .result-original-price{font-size:0.95em;text-decoration:line-through;color:#ff0000;font-weight:500;margin-top:5px}
@@ -134,7 +135,7 @@ body{font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic
 const SHEET_ID='1kncTOT0Owvplo-ee6BD-BbUwYU5AC4YDbQ-iY6Wv5Zc';
 const GID='647819140';
 let phoneData=[],kidsPhoneData=[],currentStep=1,selectedBrand='',selectedPhone='',currentCarrier='',targetCarrier='',updateTimeText='';
-const planInfo={skt:{name:'SKT 109,000원 요금제',duration:'6개월 유지'},kt:{name:'KT 110,000원 요금제',duration:'6개월 유지'},lg:{name:'LG 115,000원 요금제',duration:'6개월 유지'}};
+const planInfo={skt:{name:'SKT 109,000원 요금제',duration:'6개월 유지'},kt:{name:'KT 110,000원 요금제',duration:'6개월 유지'},lg:{name:'LG U+ 115,000원 요금제',duration:'6개월 유지'}};
 const additionalServices={skt:{name:'우주패스',price:'9,900원',cancellation:'1개월 후에 해지 가능'},kt:{name:'필수팩 지니/밀리',price:'9,900원',cancellation:'3개월 후에 해지 가능'},lg:{name:'V컬러링 음악감상',price:'8,800원',cancellation:'3개월 후에 해지 가능'}};
 async function loadData(){
 try{
@@ -236,16 +237,18 @@ const move=phone[carrier].move;
 const change=phone[carrier].change;
 if(move!=='-'){
 allDeals.push({
-carrier:carrier.toUpperCase(),
+carrier:carrier==='skt'?'SKT':carrier==='kt'?'KT':'LG U+',
 model:phone.name,
-price:parseFloat(move)*10000
+price:parseFloat(move)*10000,
+type:'번호이동'
 });
 }
 if(change!=='-'){
 allDeals.push({
-carrier:carrier.toUpperCase(),
+carrier:carrier==='skt'?'SKT':carrier==='kt'?'KT':'LG U+',
 model:phone.name,
-price:parseFloat(change)*10000
+price:parseFloat(change)*10000,
+type:'기기변경'
 });
 }
 });
@@ -262,10 +265,11 @@ else if(deal.carrier==='KT')carrierClass='kt-carrier';
 else if(deal.carrier==='LG U+')carrierClass='lg-carrier';
 html+=`
 <div class="best-deal-item">
-<div class="best-deal-left">
+<div class="best-deal-header">
 <div class="best-deal-carrier ${carrierClass}">${idx+1}. ${deal.carrier}</div>
-<div class="best-deal-model">${deal.model}</div>
+<div class="best-deal-type">(${deal.type})</div>
 </div>
+<div class="best-deal-model">${deal.model}</div>
 <div class="best-deal-price ${isNeg?'negative-price':''}">${formatted}</div>
 </div>`;
 });
