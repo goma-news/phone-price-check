@@ -217,7 +217,7 @@ return {phones,updateTime:upd};
 function parseKidsPhones(txt){
 const lines=txt.split('\n');
 const kids=[];
-for(let i=50;i<=59;i++){
+for(let i=50;i<=62;i++){
 if(i>=lines.length)break;
 const cols=parseCSVLine(lines[i]);
 if(cols.length<23)continue;
