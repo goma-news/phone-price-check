@@ -187,7 +187,7 @@ const r5=parseCSVLine(lines[4]);
 if(r5.length>21&&r5[21])upd=r5[21].trim();
 }
 const phones=[];
-for(let i=9;i<=46;i++){
+for(let i=9;i<=48;i++){
 if(i>=lines.length)break;
 const cols=parseCSVLine(lines[i]);
 if(cols.length<27)continue;
@@ -287,6 +287,14 @@ if(isNaN(n)||n===0)return '판매중지';
 const won=Math.round(n*10000);
 return (won<0?'-'+Math.abs(won):won).toLocaleString()+'원';
 }
+function formatKidsPrice(p){
+if(p==='-'||!p)return '판매중지';
+const n=parseFloat(p);
+if(isNaN(n))return '판매중지';
+const won=Math.round(n*10000);
+const absWon=Math.abs(won);
+return (won<0?'-':'')+absWon.toLocaleString()+'원';
+}
 function formatRetailPrice(p){
 const n=parseInt(p);
 return isNaN(n)||n===0?'':n.toLocaleString()+'원';
@@ -355,8 +363,8 @@ showKidsResult(p);
 }
 function showKidsResult(p){
 currentStep=5;updateProgress();
-const newP=formatPriceToWon(p.newPrice);
-const moveP=formatPriceToWon(p.movePrice);
+const newP=formatKidsPrice(p.newPrice);
+const moveP=formatKidsPrice(p.movePrice);
 const svc=additionalServices[p.carrierCode];
 const isNewNeg=isNegativePrice(p.newPrice);
 const isMoveNeg=isNegativePrice(p.movePrice);
