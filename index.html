@@ -14,10 +14,11 @@
   <meta property="og:image" content="https://hipphone.co.kr/thumbnail.jpg">
   <meta property="og:url" content="https://hipphone.co.kr">
   <meta property="og:site_name" content="힙폰">
+  
   <!-- Google Search Console 확인 -->
   <meta name="google-site-verification" content="ovUrK0FKJTc6iILLXvjiCc3v1yXv0iWV1V4qoD96J9A" />
   <meta name="naver-site-verification" content="03132a2cf47c67b76c1b504b4e311dbfcd3aae34" />
-  
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;background:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;word-break:keep-all}
@@ -114,11 +115,26 @@ body{font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic
 .btn-back:hover{background:#e9ecef}
 .btn-next{background:#667eea;color:#fff;box-shadow:0 4px 15px rgba(102,126,234,.3)}
 .btn-next:hover{background:#5568d3}
+
+/* ✅ 모달 열렸을 때 body 스크롤 막기 */
+body.modal-open{
+  overflow:hidden;
+  height:100vh;
+  position:fixed;
+  width:100%;
+}
+
 @media(max-width:768px){
 .modal-content{width:95%;padding:20px}
 .option-grid{grid-template-columns:1fr;gap:10px}
 .result-final-price{font-size:1.8em}
 .best-deals{padding:20px 15px}
+/* ✅ 모바일에서 추가 최적화 */
+body.modal-open{
+  position:fixed;
+  overflow:hidden;
+  -webkit-overflow-scrolling:touch;
+}
 }
 </style>
 </head>
@@ -318,10 +334,12 @@ function startEstimate(){
 if(phoneData.length===0){alert('데이터를 불러오는 중입니다.');return;}
 currentStep=1;selectedBrand='';selectedPhone='';currentCarrier='';targetCarrier='';
 document.getElementById('estimateModal').style.display='block';
+document.body.classList.add('modal-open'); // ✅ 추가
 showStep1();
 }
 function closeModal(){
 document.getElementById('estimateModal').style.display='none';
+document.body.classList.remove('modal-open'); // ✅ 추가
 }
 function updateProgress(){
 document.getElementById('progressFill').style.width=(currentStep/5*100)+'%';
